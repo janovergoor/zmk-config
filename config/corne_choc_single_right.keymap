@@ -17,12 +17,12 @@
         compatible = "zmk,keymap";
 
         default_layer {
-            display-name = "QWERTY";
+            display-name = "MAIN";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp C_PP  &kp Y      &kp U  &kp I      &kp O    &kp P     &kp BSPC
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp RALT  &kp H      &kp J  &kp K      &kp L    &kp SEMI  &kp SQT
-&trans  &trans  &trans  &trans  &trans  &trans                    &kp N      &kp M  &kp COMMA  &kp DOT  &kp FSLH  &kp ESC
-                        &trans  &trans  &trans                    &kp SPACE  &mo 2  &mo 1
+&kp C_PP  &kp Y      &kp U  &kp I      &kp O    &kp P     &kp BSPC
+&kp RALT  &kp H      &kp J  &kp K      &kp L    &kp SEMI  &kp SQT
+          &kp N      &kp M  &kp COMMA  &kp DOT  &kp FSLH  &kp ESC
+          &kp SPACE  &mo 2  &mo 1
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
@@ -31,30 +31,30 @@
         lower_layer {
             display-name = "NUMBER";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp RCTRL  &kp N6    &kp N7    &kp N8     &kp N9     &kp N0  &kp BSPC
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp RALT   &kp LEFT  &kp DOWN  &kp UP     &kp RIGHT  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans                     &trans    &trans    &trans     &trans     &trans  &trans
-                        &trans  &trans  &trans                     &kp LGUI  &trans    &kp SPACE
+&kp RCTRL  &kp N6    &kp N7    &kp N8     &kp N9     &kp N0  &kp BSPC
+&kp RALT   &kp LEFT  &kp DOWN  &kp UP     &kp RIGHT  &trans  &trans
+           &trans    &trans    &trans     &trans     &trans  &trans
+           &kp LGUI  &trans    &kp SPACE
             >;
         };
 
         raise_layer {
             display-name = "SYMBOL";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp RCTRL  &kp CARET  &kp AMPS   &kp ASTRK     &kp LPAR      &kp RPAR    &kp BSPC
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp RALT   &kp MINUS  &kp EQUAL  &kp LBKT      &kp RBKT      &kp BSLH    &kp GRAVE
-&trans  &trans  &trans  &trans  &trans  &trans                     &kp UNDER  &kp PLUS   &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_CLR  &kp TILDE
-                        &trans  &trans  &trans                     &kp RET    &trans     &kp RALT
+&kp RCTRL  &kp CARET  &kp AMPS   &kp ASTRK     &kp LPAR      &kp RPAR    &kp BSPC
+&kp RALT   &kp MINUS  &kp EQUAL  &kp LBKT      &kp RBKT      &kp BSLH    &kp GRAVE
+           &kp UNDER  &kp PLUS   &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_CLR  &kp TILDE
+           &kp RET    &trans     &kp RALT
             >;
         };
 
         extra_layer_1 {
-            display-name = "EXTRA 1";
+            display-name = "EXTRA";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
-                        &trans  &trans  &trans                  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans
+        &trans  &trans  &trans  &trans  &trans  &trans
+        &trans  &trans  &trans
             >;
         };
     };
