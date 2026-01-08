@@ -1,5 +1,5 @@
-identifier: sofle_choc_pro
-name: Sofle Choc Pro BT
+identifier: corne_choc_mod
+name: Corne Choc Mod BT
 type: mcu
 arch: arm
 toolchain:

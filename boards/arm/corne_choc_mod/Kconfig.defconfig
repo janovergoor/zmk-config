@@ -1,20 +1,20 @@
 # Copyright (c) 2020 The ZMK Contributors
 # SPDX-License-Identifier: MIT
 
-if BOARD_PIANTOR_PRO_BT_LEFT
+if BOARD_CORNE_CHOC_MOD_RIGHT
 
 config ZMK_KEYBOARD_NAME
-	default "Piantor Pro BT"
+	default "Corne Choc Pro"
 
 config ZMK_SPLIT_ROLE_CENTRAL
     default y
 
-endif # BOARD_PIANTOR_PRO_BT_LEFT
+endif # BOARD_CORNE_CHOC_MOD_RIGHT
 
-if BOARD_PIANTOR_PRO_BT_LEFT || BOARD_PIANTOR_PRO_BT_RIGHT
+if BOARD_CORNE_CHOC_MOD_LEFT || BOARD_CORNE_CHOC_MOD_RIGHT
 
 config BOARD
-    default "piantor_pro_bt"
+    default "corne_choc_mod"
 
 config ZMK_SPLIT
     default y
@@ -38,4 +38,4 @@ config I2C
 config ZMK_MAX17048
     default y
 
-endif # BOARD_PIANTOR_PRO_BT_LEFT || BOARD_PIANTOR_PRO_BT_RIGHT
+endif # BOARD_CORNE_CHOC_MOD_LEFT || BOARD_CORNE_CHOC_MOD_RIGHT
