@@ -149,6 +149,22 @@
             #binding-cells = <0>;
             bindings = <&kp EQUAL>, <&kp AT_SIGN>;
         };
+
+        ht_mt_bt0: ht_mt_bt0 {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HT_MT_BT0";
+            bindings = <&kp>, <&bt_sel_0>;
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+        };
+
+        ht_mt_bt1: ht_mt_bt1 {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HT_MT_BT1";
+            bindings = <&kp>, <&bt_sel_1>;
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+        };
     };
 
     combos {
@@ -215,6 +231,22 @@
         };
     };
 
+    macros {
+        bt_sel_0: bt_sel_0 {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 0>;
+            label = "BT_SEL_0";
+        };
+
+        bt_sel_1: bt_sel_1 {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL 1>;
+            label = "BT_SEL_1";
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -243,10 +275,10 @@
         raise_layer {
             display-name = "SYMBOL";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE C_PREV         &kp NUMBER_1  &kp NUMBER_2        &kp NUMBER_3        &kp NUMBER_4     &kp NUMBER_0       &dmt_ctrl_dollar_pct
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt LEFT_COMMAND C_NEXT  &dt_quotes    &dt_asterisk_caret  &dt_lt_gt           &dt_pipe_bslash  &dt_fslash_uscore  &dmt_alt_grave_tilde
-&trans  &trans  &trans  &trans  &trans  &trans                                   &dt_min_plus  &dt_curly_bracket   &dt_square_bracket  &dt_colons       &dt_eq_at          &mt LEFT_SHIFT X
-                        &trans  &trans  &trans                                   &bt BT_CLR    &trans              &rgb_ug RGB_TOG
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &ht_mt_bt0 GLOBE 0         &kp NUMBER_1  &kp NUMBER_2        &kp NUMBER_3        &kp NUMBER_4     &kp NUMBER_0       &dmt_ctrl_dollar_pct
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &ht_mt_bt1 LEFT_COMMAND 0  &dt_quotes    &dt_asterisk_caret  &dt_lt_gt           &dt_pipe_bslash  &dt_fslash_uscore  &dmt_alt_grave_tilde
+&trans  &trans  &trans  &trans  &trans  &trans                                     &dt_min_plus  &dt_curly_bracket   &dt_square_bracket  &dt_colons       &dt_eq_at          &mt LEFT_SHIFT X
+                        &trans  &trans  &trans                                     &bt BT_CLR    &trans              &rgb_ug RGB_TOG
             >;
         };
 
