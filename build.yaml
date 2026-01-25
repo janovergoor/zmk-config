@@ -45,3 +45,12 @@ include:
   - board: corne_choc_single_right_board
     shield: settings_reset
     snippet: studio-rpc-usb-uart
+
+  - board: corne_choc_single_left_board
+    shield: nice_view
+    snippet: studio-rpc-usb-uart
+    cmake-args: -DCONFIG_ZMK_STUDIO=y
+
+  - board: corne_choc_single_left_board
+    shield: settings_reset
+    snippet: studio-rpc-usb-uart

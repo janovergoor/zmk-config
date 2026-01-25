@@ -1,0 +1,15 @@
+identifier: corne_choc_single_left
+name: Corne Choc Single Left BT
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+supported:
+  - adc
+  - usb_device
+  - ble
+  - ieee802154
+  - pwm
+  - watchdog
