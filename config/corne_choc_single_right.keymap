@@ -213,6 +213,48 @@
             #binding-cells = <2>;
             tapping-term-ms = <120>;
         };
+
+        dmt_cmd_grave_tilde: dmt_cmd_grave_tilde {
+            compatible = "zmk,behavior-tap-dance";
+            label = "DMT_CMD_GRAVE_TILDE";
+            #binding-cells = <0>;
+            bindings = <&mt LEFT_COMMAND GRAVE>, <&kp TILDE>;
+        };
+
+        dmt_alt_hash_dol: dmt_alt_hash_dol {
+            compatible = "zmk,behavior-tap-dance";
+            label = "DMT_ALT_HASH_DOL";
+            #binding-cells = <0>;
+            bindings = <&mt LEFT_ALT HASH>, <&kp DOLLAR>;
+        };
+
+        dt_amp_at: dt_amp_at {
+            compatible = "zmk,behavior-tap-dance";
+            label = "DT_AMP_AT";
+            #binding-cells = <0>;
+            bindings = <&kp AMPS>, <&kp AT>;
+        };
+
+        dt_ques_exc: dt_ques_exc {
+            compatible = "zmk,behavior-tap-dance";
+            label = "DT_QUES_EXC";
+            #binding-cells = <0>;
+            bindings = <&kp QUESTION>, <&kp EXCL>;
+        };
+
+        dt_eq_pipe: dt_eq_pipe {
+            compatible = "zmk,behavior-tap-dance";
+            label = "DT_EQ_PIPE";
+            #binding-cells = <0>;
+            bindings = <&kp EQUAL>, <&kp PIPE>;
+        };
+
+        dt_pct_bslash: dt_pct_bslash {
+            compatible = "zmk,behavior-tap-dance";
+            label = "DT_PCT_BSLASH";
+            #binding-cells = <0>;
+            bindings = <&kp PRCNT>, <&kp BACKSLASH>;
+        };
     };
 
     combos {
@@ -323,8 +365,8 @@
             display-name = "QWERTY R";
             bindings = <
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp Q        &kp W         &kp E           &kp R  &kp T  &mt LEFT_SHIFT BACKSPACE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp A        &kp S         &kp D           &kp F  &kp G  &mt LEFT_ALT ESCAPE
-&trans  &trans  &trans  &trans  &trans  &trans                         &kp Z        &kp X         &kp C           &kp V  &kp B  &mt LEFT_GUI RIGHT
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp A        &kp S         &kp D           &kp F  &kp G  &mt LEFT_ALT Y
+&trans  &trans  &trans  &trans  &trans  &trans                         &kp Z        &kp X         &kp C           &kp V  &kp B  &mt LEFT_GUI P
                         &trans  &trans  &trans                         &lt 1 SPACE  &lt 2 C_MUTE  &mt LCTRL C_PP
             >;
 
@@ -334,9 +376,9 @@
         lower_layer {
             display-name = "QUERTY L";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp Y   &kp U       &kp I             &kp O     &kp P         &mt LEFT_SHIFT BACKSPACE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp ENTER      &kp H   &kp J       &kp K             &kp L     &kp UP_ARROW  &mt LEFT_ALT ESCAPE
-&trans  &trans  &trans  &trans  &trans  &trans                         &kp N   &kp M       &dt_comma_period  &kp LEFT  &kp DOWN      &mt LEFT_GUI RIGHT
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &trans  &kp U       &kp I             &kp O     &dt_fslash_uscore  &mt LEFT_SHIFT BACKSPACE
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp ENTER      &kp H   &kp J       &kp K             &kp L     &kp UP_ARROW       &mt LEFT_ALT ESCAPE
+&trans  &trans  &trans  &trans  &trans  &trans                         &kp N   &kp M       &dt_comma_period  &kp LEFT  &kp DOWN           &mt LEFT_GUI RIGHT
                         &trans  &trans  &trans                         &trans  &kp C_PREV  &mt C_NEXT LCTRL
             >;
         };
@@ -344,9 +386,9 @@
         raise_layer {
             display-name = "SYMBOL";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE C_VOL_UP  &kp NUMBER_1    &kp NUMBER_2        &kp NUMBER_3     &kp NUMBER_4     &kp NUMBER_0       &dmt_shift_hash_amp
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp C_VOL_DN        &dt_quotes      &dt_asterisk_caret  &dt_dollar_pct   &dt_pipe_bslash  &dt_fslash_uscore  &dmt_alt_grave_tilde
-&trans  &trans  &trans  &trans  &trans  &trans                              &tt_left_brace  &tt_right_brace     &dt_min_plus     &dt_colons       &dt_eq_at          &dmt_cmd_exc_quest
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE C_VOL_UP  &kp NUMBER_1    &kp NUMBER_2        &kp NUMBER_3     &kp NUMBER_4  &kp NUMBER_0    &mt LEFT_SHIFT BACKSPACE
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp C_VOL_DN        &dt_amp_at      &dt_asterisk_caret  &dt_quotes       &dt_min_plus  &dt_ques_exc    &dmt_alt_hash_dol
+&trans  &trans  &trans  &trans  &trans  &trans                              &tt_left_brace  &tt_right_brace     &dt_colons       &dt_eq_pipe   &dt_pct_bslash  &dmt_cmd_grave_tilde
                         &trans  &trans  &trans                              &trans          &trans              &rgb_ug RGB_TOG
             >;
         };
