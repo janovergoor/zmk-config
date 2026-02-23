@@ -221,9 +221,9 @@
             bindings = <&mt LEFT_COMMAND GRAVE>, <&kp TILDE>;
         };
 
-        dmt_alt_hash_dol: dmt_alt_hash_dol {
+        dmt_alt_hash_dollar: dmt_alt_hash_dollar {
             compatible = "zmk,behavior-tap-dance";
-            label = "DMT_ALT_HASH_DOL";
+            label = "DMT_ALT_HASH_DOLLAR";
             #binding-cells = <0>;
             bindings = <&mt LEFT_ALT HASH>, <&kp DOLLAR>;
         };
@@ -254,6 +254,27 @@
             label = "DT_PCT_BSLASH";
             #binding-cells = <0>;
             bindings = <&kp PRCNT>, <&kp BACKSLASH>;
+        };
+
+        tmt_alt_hash_dollar_euro: tmt_alt_hash_dollar_euro {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TMT_ALT_HASH_DOLLAR_EURO";
+            #binding-cells = <0>;
+            bindings = <&mt LEFT_ALT HASH>, <&kp DOLLAR>, <&comb_euro>;
+        };
+
+        tt_min_plus_plusmin: tt_min_plus_plusmin {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TT_MIN_PLUS_PLUSMIN";
+            #binding-cells = <0>;
+            bindings = <&kp KP_MINUS>, <&kp KP_PLUS>, <&comb_plusmin>;
+        };
+
+        tt_asterisk_caret_deg: tt_asterisk_caret_deg {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TT_ASTERISK_CARET_DEG";
+            #binding-cells = <0>;
+            bindings = <&kp ASTERISK>, <&kp CARET>, <&comb_degree>;
         };
     };
 
@@ -356,6 +377,27 @@
             bindings = <&kp LEFT_CONTROL &kp X>;
             label = "CUT";
         };
+
+        comb_degree: degree {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(NUMBER_0)>;
+            label = "DEGREE";
+        };
+
+        comb_euro: comb_euro {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(LS(NUMBER_2))>;
+            label = "COMB_EURO";
+        };
+
+        comb_plusmin: comb_plusmin {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(LS(NUMBER_2))>;
+            label = "COMB_PLUSMIN";
+        };
     };
 
     keymap {
@@ -386,10 +428,10 @@
         raise_layer {
             display-name = "SYMBOL";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE C_VOL_UP  &kp NUMBER_1       &kp NUMBER_2        &kp NUMBER_3  &kp NUMBER_4  &kp NUMBER_0    &mt LEFT_SHIFT BACKSPACE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp C_VOL_DN        &dt_fslash_uscore  &dt_asterisk_caret  &dt_quotes    &dt_min_plus  &dt_ques_exc    &dmt_alt_hash_dol
-&trans  &trans  &trans  &trans  &trans  &trans                              &tt_left_brace     &tt_right_brace     &dt_colons    &dt_eq_pipe   &dt_pct_bslash  &dmt_cmd_grave_tilde
-                        &trans  &trans  &trans                              &trans             &trans              &dt_amp_at
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE C_VOL_UP  &kp NUMBER_1       &kp NUMBER_2            &kp NUMBER_3  &kp NUMBER_4          &kp NUMBER_0    &mt LEFT_SHIFT BACKSPACE
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp C_VOL_DN        &dt_fslash_uscore  &tt_asterisk_caret_deg  &dt_quotes    &tt_min_plus_plusmin  &dt_ques_exc    &tmt_alt_hash_dollar_euro
+&trans  &trans  &trans  &trans  &trans  &trans                              &tt_left_brace     &tt_right_brace         &dt_colons    &dt_eq_pipe           &dt_pct_bslash  &dmt_cmd_grave_tilde
+                        &trans  &trans  &trans                              &trans             &trans                  &dt_amp_at
             >;
         };
 
