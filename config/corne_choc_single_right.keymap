@@ -276,6 +276,13 @@
             #binding-cells = <0>;
             bindings = <&kp ASTERISK>, <&kp CARET>, <&comb_degree>;
         };
+
+        ldt_space_comma: ldt_space_comma {
+            compatible = "zmk,behavior-tap-dance";
+            label = "LDT_SPACE_COMMA";
+            #binding-cells = <0>;
+            bindings = <&lt 1 SPACE>, <&kp COMMA>;
+        };
     };
 
     combos {
@@ -406,10 +413,10 @@
         default_layer {
             display-name = "QWERTY R";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp Q        &kp W         &kp E           &kp R  &kp T  &mt LEFT_SHIFT BACKSPACE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp A        &kp S         &kp D           &kp F  &kp G  &mt LEFT_ALT Y
-&trans  &trans  &trans  &trans  &trans  &trans                         &kp Z        &kp X         &kp C           &kp V  &kp B  &mt LEFT_GUI P
-                        &trans  &trans  &trans                         &lt 1 SPACE  &lt 2 C_MUTE  &mt LCTRL C_PP
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp Q             &kp W         &kp E           &kp R  &kp T  &mt LEFT_SHIFT BACKSPACE
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp A             &kp S         &kp D           &kp F  &kp G  &mt LEFT_ALT Y
+&trans  &trans  &trans  &trans  &trans  &trans                         &kp Z             &kp X         &kp C           &kp V  &kp B  &mt LEFT_GUI P
+                        &trans  &trans  &trans                         &ldt_space_comma  &lt 2 C_MUTE  &mt LCTRL C_PP
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
