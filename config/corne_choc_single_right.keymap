@@ -419,9 +419,9 @@
         default_layer {
             display-name = "QWERTY R";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp Q             &kp W         &kp E           &kp R  &kp T  &mt LEFT_SHIFT BACKSPACE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp A             &kp S         &kp D           &kp F  &kp G  &mt LEFT_ALT Y
-&trans  &trans  &trans  &trans  &trans  &trans                         &kp Z             &kp X         &kp C           &kp V  &kp B  &mt LEFT_GUI P
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp P             &kp O         &kp I           &kp N  &kp H  &mt LEFT_SHIFT BACKSPACE
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp D             &kp A         &kp E           &kp T  &kp R  &mt LEFT_ALT C
+&trans  &trans  &trans  &trans  &trans  &trans                         &kp G             &kp S         &kp U           &kp L  &kp M  &mt LEFT_GUI B
                         &trans  &trans  &trans                         &ldt_space_comma  &lt 2 C_MUTE  &mt LCTRL C_PP
             >;
 
@@ -431,9 +431,9 @@
         lower_layer {
             display-name = "QUERTY L";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &trans  &kp U       &kp I             &kp O     &trans        &mt LEFT_SHIFT BACKSPACE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp ENTER      &kp H   &kp J       &kp K             &kp L     &kp UP_ARROW  &mt LEFT_ALT ESCAPE
-&trans  &trans  &trans  &trans  &trans  &trans                         &kp N   &kp M       &dt_comma_period  &kp LEFT  &kp DOWN      &mt LEFT_GUI RIGHT
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp E   &kp K       &kp W             &kp V     &kp X         &mt LEFT_SHIFT BACKSPACE
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp ENTER      &kp Z   &kp Y       &dt_comma_period  &kp F     &kp UP_ARROW  &mt LEFT_ALT ESCAPE
+&trans  &trans  &trans  &trans  &trans  &trans                         &kp Q   &kp O       &kp J             &kp LEFT  &kp DOWN      &mt LEFT_GUI RIGHT
                         &trans  &trans  &trans                         &trans  &kp C_PREV  &mt C_NEXT LCTRL
             >;
         };
