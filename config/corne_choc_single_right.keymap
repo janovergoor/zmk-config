@@ -279,6 +279,7 @@
             compatible = "zmk,behavior-hold-tap";
             label = "HT_FN_RGB";
             bindings = <&kp>, <&macro_rgb_tog>;
+
             #binding-cells = <2>;
             tapping-term-ms = <120>;
         };
@@ -387,7 +388,7 @@
         comb_degree: degree {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&kp LA(NUMBER_0)>;
+            bindings = <&kp LA(LS(N8))>;
             label = "DEGREE";
         };
 
@@ -401,7 +402,7 @@
         comb_plusmin: comb_plusmin {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&kp LA(LS(NUMBER_2))>;
+            bindings = <&kp LA(LS(EQUAL))>;
             label = "COMB_PLUSMIN";
         };
 
