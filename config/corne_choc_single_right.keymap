@@ -272,7 +272,7 @@
             compatible = "zmk,behavior-tap-dance";
             label = "LDT_SPACE_COMMA";
             #binding-cells = <0>;
-            bindings = <&lt 1 SPACE>, <&kp COMMA>;
+            bindings = <&lt 1 SPACE>, <&macro_comma_space>;
         };
 
         ht_fn_rgb: ht_fn_rgb {
@@ -411,6 +411,13 @@
             #binding-cells = <0>;
             bindings = <&rgb_ug RGB_TOG>;
             label = "MACRO_RGB_TOG";
+        };
+
+        macro_comma_space: macro_comma_space {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp COMMA &kp SPACE>;
+            label = "MACRO_COMMA_SPACE";
         };
     };
 
