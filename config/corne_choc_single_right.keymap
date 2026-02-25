@@ -273,7 +273,6 @@
             label = "LDT_SPACE_COMMA";
             #binding-cells = <0>;
             bindings = <&lt 1 SPACE>, <&macro_comma_space>;
-
             tapping-term-ms = <100>;
         };
 
@@ -292,14 +291,13 @@
             flavor = "hold-preferred";
             tapping-term-ms = <120>;
             quick-tap-ms = <120>;
-            bindings = <&lt>, <&td_space_comma>;
+            bindings = <&mo>, <&td_space_comma>;
         };
 
         ht_fn_rgb: ht_fn_rgb {
             compatible = "zmk,behavior-hold-tap";
             label = "HT_FN_RGB";
             bindings = <&kp>, <&macro_rgb_tog>;
-
             #binding-cells = <2>;
             tapping-term-ms = <120>;
         };
