@@ -9,9 +9,9 @@
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/rgb.h>
 
-&mt { tapping-term-ms = <120>; };
+&mt { tapping-term-ms = <150>; };
 
-&lt { tapping-term-ms = <120>; };
+&lt { tapping-term-ms = <150>; };
 
 / {
     chosen { zmk,physical-layout = &default_layout; };
@@ -268,6 +268,14 @@
             bindings = <&kp ASTERISK>, <&kp CARET>, <&comb_degree>;
         };
 
+        ht_fn_rgb: ht_fn_rgb {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HT_FN_RGB";
+            bindings = <&kp>, <&macro_rgb_tog>;
+            #binding-cells = <2>;
+            tapping-term-ms = <120>;
+        };
+
         ldt_space_comma: ldt_space_comma {
             compatible = "zmk,behavior-tap-dance";
             label = "LDT_SPACE_COMMA";
@@ -289,17 +297,19 @@
             label = "LDT_SPACE_COMMA2";
             #binding-cells = <2>;
             flavor = "hold-preferred";
-            tapping-term-ms = <120>;
+            tapping-term-ms = <150>;
             quick-tap-ms = <120>;
             bindings = <&mo>, <&td_space_comma>;
         };
 
-        ht_fn_rgb: ht_fn_rgb {
+        ht_shift_backspace: ht_shift_backspace {
             compatible = "zmk,behavior-hold-tap";
-            label = "HT_FN_RGB";
-            bindings = <&kp>, <&macro_rgb_tog>;
+            label = "HT_SHIFT_BACKSPACE";
             #binding-cells = <2>;
-            tapping-term-ms = <120>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <150>;
+            quick-tap-ms = <120>;
+            bindings = <&kp LEFT_SHIFT>, <&kp BACKSPACE>;
         };
     };
 
