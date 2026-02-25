@@ -273,13 +273,33 @@
             label = "LDT_SPACE_COMMA";
             #binding-cells = <0>;
             bindings = <&lt 1 SPACE>, <&macro_comma_space>;
+
             tapping-term-ms = <100>;
+        };
+
+        td_space_comma: td_space_comma {
+            compatible = "zmk,behavior-tap-dance";
+            label = "TD_SPACE_COMMA";
+            #binding-cells = <0>;
+            tapping-term-ms = <120>;
+            bindings = <&kp SPACE>, <&macro_comma_space>;
+        };
+
+        ldt_space_comma2: ldt_space_comma2 {
+            compatible = "zmk,behavior-hold-tap";
+            label = "LDT_SPACE_COMMA2";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <120>;
+            quick-tap-ms = <120>;
+            bindings = <&lt>, <&td_space_comma>;
         };
 
         ht_fn_rgb: ht_fn_rgb {
             compatible = "zmk,behavior-hold-tap";
             label = "HT_FN_RGB";
             bindings = <&kp>, <&macro_rgb_tog>;
+
             #binding-cells = <2>;
             tapping-term-ms = <120>;
         };
@@ -427,10 +447,10 @@
         default_layer {
             display-name = "QWERTY R";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp P             &kp O         &kp I           &kp N  &kp H  &mt LEFT_SHIFT BACKSPACE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp D             &kp A         &kp E           &kp T  &kp R  &mt LEFT_ALT C
-&trans  &trans  &trans  &trans  &trans  &trans                         &kp G             &kp S         &kp U           &kp L  &kp M  &mt LEFT_GUI B
-                        &trans  &trans  &trans                         &ldt_space_comma  &lt 2 C_MUTE  &mt LCTRL C_PP
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp P                  &kp O         &kp I           &kp N  &kp H  &mt LEFT_SHIFT BACKSPACE
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp D                  &kp A         &kp E           &kp T  &kp R  &mt LEFT_ALT C
+&trans  &trans  &trans  &trans  &trans  &trans                         &kp G                  &kp S         &kp U           &kp L  &kp M  &mt LEFT_GUI B
+                        &trans  &trans  &trans                         &ldt_space_comma2 1 0  &lt 2 C_MUTE  &mt LCTRL C_PP
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
