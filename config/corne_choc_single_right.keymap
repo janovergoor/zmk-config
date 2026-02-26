@@ -313,6 +313,20 @@
             quick-tap-ms = <120>;
             bindings = <&kp>, <&kp>;
         };
+
+        dmt_ctrl_grave_tilde: dmt_ctrl_grave_tilde {
+            compatible = "zmk,behavior-tap-dance";
+            label = "DMT_CTRL_GRAVE_TILDE";
+            #binding-cells = <0>;
+            bindings = <&mt LCTRL GRAVE>, <&kp TILDE>;
+        };
+
+        dmt_cmd_amp_at: dmt_cmd_amp_at {
+            compatible = "zmk,behavior-tap-dance";
+            label = "DMT_CMD_AMP_AT";
+            #binding-cells = <0>;
+            bindings = <&mt LEFT_COMMAND AMPS>, <&kp AT>;
+        };
     };
 
     combos {
@@ -457,10 +471,10 @@
         default_layer {
             display-name = "QWERTY R";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp P                  &kp O         &kp I           &kp N  &kp H  &ht_shift_backspace LEFT_SHIFT BACKSPACE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp D                  &kp A         &kp E           &kp T  &kp R  &mt LEFT_ALT C
-&trans  &trans  &trans  &trans  &trans  &trans                         &kp G                  &kp S         &kp U           &kp L  &kp M  &mt LEFT_GUI B
-                        &trans  &trans  &trans                         &ldt_space_comma2 1 0  &lt 2 C_MUTE  &mt LCTRL C_PP
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp P                  &kp O         &kp I          &kp N  &kp H  &ht_shift_backspace LEFT_SHIFT BACKSPACE
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &lt 3 ENTER    &kp D                  &kp A         &kp E          &kp T  &kp R  &mt LEFT_ALT C
+&trans  &trans  &trans  &trans  &trans  &trans                         &kp G                  &kp S         &kp U          &kp L  &kp M  &mt LEFT_CONTROL B
+                        &trans  &trans  &trans                         &ldt_space_comma2 1 0  &lt 2 C_MUTE  &mt LGUI C_PP
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
@@ -471,18 +485,18 @@
             bindings = <
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE TAB  &kp E   &kp K       &kp W             &kp V     &kp X         &mt LEFT_SHIFT BACKSPACE
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp ENTER      &kp Z   &kp Y       &dt_comma_period  &kp F     &kp UP_ARROW  &mt LEFT_ALT ESCAPE
-&trans  &trans  &trans  &trans  &trans  &trans                         &kp Q   &kp O       &kp J             &kp LEFT  &kp DOWN      &mt LEFT_GUI RIGHT
-                        &trans  &trans  &trans                         &trans  &kp C_PREV  &mt C_NEXT LCTRL
+&trans  &trans  &trans  &trans  &trans  &trans                         &kp Q   &kp O       &kp J             &kp LEFT  &kp DOWN      &mt LCTRL RIGHT
+                        &trans  &trans  &trans                         &trans  &kp C_PREV  &mt LGUI C_NEXT
             >;
         };
 
         raise_layer {
             display-name = "SYMBOL";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE C_VOL_UP  &kp NUMBER_1       &kp NUMBER_2            &kp NUMBER_3  &kp NUMBER_4          &kp NUMBER_0    &mt LEFT_SHIFT BACKSPACE
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp C_VOL_DN        &dt_fslash_uscore  &tt_asterisk_caret_deg  &dt_quotes    &tt_min_plus_plusmin  &dt_ques_exc    &tmt_alt_hash_dollar_euro
-&trans  &trans  &trans  &trans  &trans  &trans                              &tt_left_brace     &tt_right_brace         &dt_colons    &dt_eq_pipe           &dt_pct_bslash  &dmt_cmd_grave_tilde
-                        &trans  &trans  &trans                              &trans             &trans                  &dt_amp_at
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &mt GLOBE C_VOL_UP  &kp NUMBER_1       &kp NUMBER_2            &kp NUMBER_3     &kp NUMBER_4          &kp NUMBER_0    &mt LEFT_SHIFT BACKSPACE
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp C_VOL_DN        &dt_fslash_uscore  &tt_asterisk_caret_deg  &dt_quotes       &tt_min_plus_plusmin  &dt_ques_exc    &tmt_alt_hash_dollar_euro
+&trans  &trans  &trans  &trans  &trans  &trans                              &tt_left_brace     &tt_right_brace         &dt_colons       &dt_eq_pipe           &dt_pct_bslash  &dmt_ctrl_grave_tilde
+                        &trans  &trans  &trans                              &trans             &trans                  &dmt_cmd_amp_at
             >;
         };
 
@@ -492,7 +506,7 @@
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &ht_fn_rgb GLOBE 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_SEL 0  &bt BT_CLR
 &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans              &trans        &trans        &trans        &trans        &bt BT_NXT    &kp LEFT_ALT
 &trans  &trans  &trans  &trans  &trans  &trans                              &trans        &trans        &trans        &bt BT_PRV    &bt BT_PRV    &bt BT_NXT
-                        &trans  &trans  &trans                              &trans        &trans        &kp RCTRL
+                        &trans  &trans  &trans                              &trans        &trans        &kp LGUI
             >;
         };
     };
