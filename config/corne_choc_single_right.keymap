@@ -391,6 +391,26 @@
             key-positions = <10 11 9 8>;
             layers = <2>;
         };
+
+        pgup {
+            bindings = <&kp PG_UP>;
+            key-positions = <7 26>;
+        };
+
+        pgdn {
+            bindings = <&kp PAGE_DOWN>;
+            key-positions = <7 38>;
+        };
+
+        home {
+            bindings = <&kp HOME>;
+            key-positions = <7 37>;
+        };
+
+        end {
+            bindings = <&kp END>;
+            key-positions = <7 39>;
+        };
     };
 
     macros {
