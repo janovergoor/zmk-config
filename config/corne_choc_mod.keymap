@@ -78,35 +78,35 @@
         compatible = "zmk,keymap";
 
         // ------------------------------------------------------------------------------------------
-        // | TAB | Q | W | E | R | T | MUTE | VOL+ | Y | U | I | O |  P  | BSPC |
-        // | FN  | A | S | D | F | G | CTRL | VOL- | H | J | K | L |  ^  | ESC  |
+        // | ESC | Q | W | E | R | T | MUTE | VOL+ | Y | U | I | O |  P  | BSPC |
+        // | TAB | A | S | D | F | G |  FN  | VOL- | H | J | K | L |  ^  | RET  |
         // | SHFT| Z | X | C | V | B |             | N | M | ,/. | < | v |  >   |
-        //                 | ALT | CMD | RET |   | SPACE | L2(mo) | PLAY |
+        //                 | CTRL | ALT | CMD |   | SPACE | L2(mo) | PLAY |
         default_layer {
             display-name = "QWERTY";
             bindings = <
-&kp TAB    &kp Q  &kp W  &kp E  &kp R  &kp T    &kp C_MUTE  &kp C_VOL_UP    &kp Y  &kp U  &kp I             &kp O     &kp P     &kp BSPC
-&kp GLOBE  &kp A  &kp S  &kp D  &kp F  &kp G    &kp LCTRL   &kp C_VOL_DN    &kp H  &kp J  &kp K             &kp L     &kp UP    &kp ESC
+&kp ESC    &kp Q  &kp W  &kp E  &kp R  &kp T    &kp C_MUTE  &kp C_VOL_UP    &kp Y  &kp U  &kp I             &kp O     &kp P     &kp BSPC
+&kp TAB    &kp A  &kp S  &kp D  &kp F  &kp G    &kp GLOBE   &kp C_VOL_DN    &kp H  &kp J  &kp K             &kp L     &kp UP    &kp RET
 &kp LSHFT  &kp Z  &kp X  &kp C  &kp V  &kp B                                &kp N  &kp M  &mm_comma_period  &kp LEFT  &kp DOWN  &kp RIGHT
-                                &kp LALT  &kp LGUI  &kp RET                 &kp SPACE  &mo 1  &kp C_PP
+                                &kp LCTRL  &kp LALT  &kp LGUI               &kp SPACE  &mo 1  &kp C_PP
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
         };
 
         // ------------------------------------------------------------------------------------------
-        // | TAB | 1 | 2 | 3 | 4 | 5 | LOCK | PREV | 6 | 7 | 8 | 9 | 0 | BSPC |   (LOCK = Ctrl+Cmd+Q)
-        // | FN  | ` | - | = | [ | ] | CTRL  | NEXT | / | ; | ' | \ | ^ | ESC  |
+        // | ESC | 1 | 2 | 3 | 4 | 5 | LOCK | PREV | 6 | 7 | 8 | 9 | 0 | BSPC |   (LOCK = Ctrl+Cmd+Q)
+        // | TAB | ` | - | = | [ | ] |  FN  | NEXT | / | ; | ' | \ | ^ | RET  |
         // | SHFT| ± | € | BT0 | BT1 | BTclr |      |   | . | , | < | v |  >   |
-        //                 | ALT | CMD | RET |   | SPACE | (mo) | PLAY |
+        //                 | CTRL | ALT | CMD |   | SPACE | (mo) | PLAY |
         // Shifted glyphs (! @ # ... ~ _ + { } | : " ?) come from the held Shift.
         num_sym_layer {
             display-name = "NUM/SYM";
             bindings = <
-&kp TAB    &kp N1              &kp N2      &kp N3        &kp N4        &kp N5      &kp LC(LG(Q))  &kp C_PREV  &kp N6    &kp N7    &kp N8    &kp N9    &kp N0  &kp BSPC
-&kp GLOBE  &kp GRAVE           &kp MINUS   &kp EQUAL     &kp LBKT      &kp RBKT    &kp LCTRL    &kp C_NEXT    &kp FSLH  &kp SEMI  &kp SQT   &kp BSLH  &kp UP  &kp ESC
+&kp ESC    &kp N1              &kp N2      &kp N3        &kp N4        &kp N5      &kp LC(LG(Q))  &kp C_PREV  &kp N6    &kp N7    &kp N8    &kp N9    &kp N0  &kp BSPC
+&kp TAB    &kp GRAVE           &kp MINUS   &kp EQUAL     &kp LBKT      &kp RBKT    &kp GLOBE    &kp C_NEXT    &kp FSLH  &kp SEMI  &kp SQT   &kp BSLH  &kp UP  &kp RET
 &kp LSHFT  &mm_plusmin_degree  &comb_euro  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_CLR                            &none     &mm_dot_lt  &mm_comma_gt  &kp LEFT  &kp DOWN  &kp RIGHT
-                                           &kp LALT  &kp LGUI  &kp RET                          &kp SPACE  &trans  &kp C_PP
+                                           &kp LCTRL  &kp LALT  &kp LGUI                        &kp SPACE  &trans  &kp C_PP
             >;
         };
     };
