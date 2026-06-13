@@ -14,48 +14,99 @@
 };
 
 / {
+    behaviors {
+        // Base-layer comma key: tap = "," , Shift = "." (period via shift).
+        // NOTE: this means every period needs Shift. Alternatives = tap-dance
+        // (tap , / double-tap .) or a dedicated period key. Easy to swap later.
+        mm_comma_period: mm_comma_period {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp COMMA>, <&kp DOT>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        // Collapsed "± / °" key: tap = ± , Shift = ° (both are mac Option-chars).
+        mm_plusmin_degree: mm_plusmin_degree {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&comb_plusmin>, <&comb_degree>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        // Layer-1 period/comma: Shift gives < and > (kept "crossed" on purpose,
+        // for consistency with the base comma/period key — per design).
+        mm_dot_lt: mm_dot_lt {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp DOT>, <&kp LESS_THAN>;     // tap . , Shift <
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        mm_comma_gt: mm_comma_gt {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp COMMA>, <&kp GREATER_THAN>; // tap , , Shift >
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+    };
+
+    macros {
+        // mac Option-key special characters (borrowed from the one-handed board)
+        comb_degree: comb_degree {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(LS(N8))>;     // ° = Option+Shift+8
+            label = "DEGREE";
+        };
+
+        comb_euro: comb_euro {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(LS(N2))>;     // € = Option+Shift+2
+            label = "EURO";
+        };
+
+        comb_plusmin: comb_plusmin {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LA(LS(EQUAL))>;  // ± = Option+Shift+=
+            label = "PLUSMIN";
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
+        // ------------------------------------------------------------------------------------------
+        // | TAB | Q | W | E | R | T | MUTE | VOL+ | Y | U | I | O |  P  | BSPC |
+        // | FN  | A | S | D | F | G | CTRL | VOL- | H | J | K | L |  ^  | ESC  |
+        // | SHFT| Z | X | C | V | B |             | N | M | ,/. | < | v |  >   |
+        //                 | ALT | CMD | RET |   | SPACE | L2(mo) | PLAY |
         default_layer {
             display-name = "QWERTY";
             bindings = <
-&kp TAB    &kp Q  &kp W  &kp E     &kp R  &kp T    &kp C_MUTE  &kp C_PP  &kp Y      &kp U  &kp I      &kp O    &kp P     &kp BSPC
-&kp LCTRL  &kp A  &kp S  &kp D     &kp F  &kp G    &kp LALT    &kp RALT  &kp H      &kp J  &kp K      &kp L    &kp SEMI  &kp SQT
-&kp LSHFT  &kp Z  &kp X  &kp C     &kp V  &kp B                          &kp N      &kp M  &kp COMMA  &kp DOT  &kp FSLH  &kp ESC
-                         &kp LGUI  &mo 1  &kp RET                        &kp SPACE  &mo 2  &kp RALT
+&kp TAB    &kp Q  &kp W  &kp E  &kp R  &kp T    &kp C_MUTE  &kp C_VOL_UP    &kp Y  &kp U  &kp I             &kp O     &kp P     &kp BSPC
+&kp GLOBE  &kp A  &kp S  &kp D  &kp F  &kp G    &kp LCTRL   &kp C_VOL_DN    &kp H  &kp J  &kp K             &kp L     &kp UP    &kp ESC
+&kp LSHFT  &kp Z  &kp X  &kp C  &kp V  &kp B                                &kp N  &kp M  &mm_comma_period  &kp LEFT  &kp DOWN  &kp RIGHT
+                                &kp LALT  &kp LGUI  &kp RET                 &kp SPACE  &mo 1  &kp C_PP
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
         };
 
-        lower_layer {
-            display-name = "NUMBER";
+        // ------------------------------------------------------------------------------------------
+        // | TAB | 1 | 2 | 3 | 4 | 5 | LOCK | PREV | 6 | 7 | 8 | 9 | 0 | BSPC |   (LOCK = Ctrl+Cmd+Q)
+        // | FN  | ` | - | = | [ | ] | CTRL  | NEXT | / | ; | ' | \ | ^ | ESC  |
+        // | SHFT| ± | € | BT0 | BT1 | BTclr |      |   | . | , | < | v |  >   |
+        //                 | ALT | CMD | RET |   | SPACE | (mo) | PLAY |
+        // Shifted glyphs (! @ # ... ~ _ + { } | : " ?) come from the held Shift.
+        num_sym_layer {
+            display-name = "NUM/SYM";
             bindings = <
-&kp TAB    &kp N1        &kp N2           &kp N3        &kp N4        &kp N5          &kp LCTRL  &kp RCTRL  &kp N6    &kp N7    &kp N8     &kp N9     &kp N0  &kp BSPC
-&kp LCTRL  &bt BT_SEL 0  &bt BT_SEL 1     &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4    &kp LALT   &kp RALT   &kp LEFT  &kp DOWN  &kp UP     &kp RIGHT  &trans  &trans
-&kp LSHFT  &bt BT_CLR    &rgb_ug RGB_TOG  &sys_reset    &bootloader   &studio_unlock                        &trans    &trans    &trans     &trans     &trans  &trans
-                                          &kp LGUI      &trans        &kp SPACE                             &kp LGUI  &trans    &kp SPACE
-            >;
-        };
-
-        raise_layer {
-            display-name = "SYMBOL";
-            bindings = <
-&kp TAB    &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp LCTRL  &kp RCTRL  &kp CARET  &kp AMPS   &kp ASTRK     &kp LPAR      &kp RPAR    &kp BSPC
-&kp LCTRL  &trans    &trans  &trans    &trans    &trans     &kp LALT   &kp RALT   &kp MINUS  &kp EQUAL  &kp LBKT      &kp RBKT      &kp BSLH    &kp GRAVE
-&kp LSHFT  &trans    &trans  &trans    &trans    &trans                           &kp UNDER  &kp PLUS   &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_CLR  &kp TILDE
-                             &kp LGUI  &trans    &kp SPACE                        &kp RET    &trans     &kp RALT
-            >;
-        };
-
-        extra_layer_1 {
-            display-name = "EXTRA";
-            bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
-                        &trans  &trans  &trans                  &trans  &trans  &trans
+&kp TAB    &kp N1              &kp N2      &kp N3        &kp N4        &kp N5      &kp LC(LG(Q))  &kp C_PREV  &kp N6    &kp N7    &kp N8    &kp N9    &kp N0  &kp BSPC
+&kp GLOBE  &kp GRAVE           &kp MINUS   &kp EQUAL     &kp LBKT      &kp RBKT    &kp LCTRL    &kp C_NEXT    &kp FSLH  &kp SEMI  &kp SQT   &kp BSLH  &kp UP  &kp ESC
+&kp LSHFT  &mm_plusmin_degree  &comb_euro  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_CLR                            &none     &mm_dot_lt  &mm_comma_gt  &kp LEFT  &kp DOWN  &kp RIGHT
+                                           &kp LALT  &kp LGUI  &kp RET                          &kp SPACE  &trans  &kp C_PP
             >;
         };
     };
