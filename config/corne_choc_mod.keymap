@@ -151,13 +151,13 @@
         // | TAB | A | S | D | F | G |  FN  | VOL- | H | J | K | L |  ^  | RET  |
         // | SHFT| Z | X | C | V | B |             | N | M | ,/. | < | v |  >   |
         //                 | CTRL | ALT | CMD |   | SPACE | L2(mo) | PLAY |
-        // FN sends Caps Lock — in macOS remap this keyboard's Caps Lock -> 🌐 Globe / Function (fn),
-        // making it the real Globe/Fn key (fn+arrows = PgUp/PgDn/Home/End, Globe+E = emoji, ...).
+        // FN (left inner): tap = Globe (emoji/input switch), hold = nav layer (layer 2):
+        //   fn+↑/↓/←/→ = PgUp/PgDn/Home/End,  fn+BkSp = forward Delete.
         default_layer {
             display-name = "QWERTY";
             bindings = <
 &mm_esc_grave  &kp Q  &kp W  &kp E  &kp R  &kp T   &kp C_MUTE  &kp C_VOL_UP    &kp Y  &kp U  &kp I             &kp O     &kp P     &kp BSPC
-&kp TAB        &kp A  &kp S  &kp D  &kp F  &kp G   &kp CAPS &kp C_VOL_DN    &kp H  &kp J  &kp K             &kp L     &kp UP    &kp RET
+&kp TAB        &kp A  &kp S  &kp D  &kp F  &kp G   &lt 2 GLOBE &kp C_VOL_DN    &kp H  &kp J  &kp K             &kp L     &kp UP    &kp RET
 &kp LSHFT  &kp Z  &kp X  &kp C  &kp V  &kp B                                &kp N  &kp M  &mm_comma_period  &kp LEFT  &kp DOWN  &kp RIGHT
                                 &kp LCTRL  &kp LALT  &kp LGUI               &kp SPACE  &mo 1  &kp C_PP
             >;
@@ -175,9 +175,21 @@
             display-name = "NUM/SYM";
             bindings = <
 &mm_esc_grave  &mm_1_bslash  &mm_2_pipe  &kp N3   &kp N4     &kp N5     &kp LC(LG(Q))  &kp C_PREV  &kp N6    &mm_7_euro      &mm_8_right  &mm_9_degree  &mm_0_plusmin  &kp BSPC
-&kp TAB        &kp PLUS      &kp MINUS   &kp FSLH &kp ASTRK  &kp EQUAL  &kp CAPS  &kp C_NEXT    &kp AMPS  &mm_colon_semi  &kp DQT      &kp SQT       &kp UP         &kp RET
+&kp TAB        &kp PLUS      &kp MINUS   &kp FSLH &kp ASTRK  &kp EQUAL  &lt 2 GLOBE  &kp C_NEXT    &kp AMPS  &mm_colon_semi  &kp DQT      &kp SQT       &kp UP         &kp RET
 &kp LSHFT  &kp EXCL      &mm_lt_lbkt &mm_gt_rbkt &mm_lpar_lbrc &mm_rpar_rbrc                     &kp AT    &kp GRAVE       &mm_comma_period  &kp LEFT  &kp DOWN       &kp RIGHT
                                      &kp LCTRL  &kp LALT  &kp LGUI                               &kp SPACE  &trans  &none
+            >;
+        };
+
+        // Hold FN -> mac-style navigation (true mac Fn can't be emulated, so this layer does it):
+        //   fn+↑=PgUp  fn+↓=PgDn  fn+←=Home  fn+→=End  fn+BkSp=forward Delete
+        fn_layer {
+            display-name = "FN";
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans    &trans  &trans  &trans  &trans  &trans     &kp DEL
+&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans    &trans  &trans  &trans  &trans  &kp PG_UP  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &kp HOME   &kp PG_DN  &kp END
+                                &trans  &trans  &trans              &trans  &trans  &trans
             >;
         };
     };
