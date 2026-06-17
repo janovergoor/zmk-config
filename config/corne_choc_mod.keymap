@@ -89,6 +89,16 @@
             bindings = <&kp RPAR>, <&kp RBRC>;
             mods = <(MOD_LSFT|MOD_RSFT)>;
         };
+
+        // ESC key: tap = Esc, Cmd+Esc -> Cmd+`  (mac window/tab cycling).
+        // keep-mods keeps Cmd applied to the morphed `. Needs ` working (ANSI, see notes).
+        mm_esc_grave: mm_esc_grave {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp ESC>, <&kp GRAVE>;
+            mods = <(MOD_LGUI|MOD_RGUI)>;
+            keep-mods = <(MOD_LGUI|MOD_RGUI)>;
+        };
     };
 
     macros {
@@ -128,6 +138,9 @@
         combo_bt1   { timeout-ms = <75>; key-positions = <45 1>;  bindings = <&bt BT_SEL 1>; layers = <1>; };
         combo_bt2   { timeout-ms = <75>; key-positions = <45 2>;  bindings = <&bt BT_SEL 2>; layers = <1>; };
         combo_btclr { timeout-ms = <75>; key-positions = <45 13>; bindings = <&bt BT_CLR>;   layers = <1>; };
+        // S + D pressed together -> "_"  (base + NUM/SYM). The "-" key's Shift->"_" still works too.
+        // Tight 40ms window to reduce accidental fires on "ds"/"sd" typing rolls (words, needs, wisdom...).
+        combo_under { timeout-ms = <40>; key-positions = <16 17>; bindings = <&kp UNDER>;    layers = <0 1>; };
     };
 
     keymap {
@@ -138,11 +151,13 @@
         // | TAB | A | S | D | F | G |  FN  | VOL- | H | J | K | L |  ^  | RET  |
         // | SHFT| Z | X | C | V | B |             | N | M | ,/. | < | v |  >   |
         //                 | CTRL | ALT | CMD |   | SPACE | L2(mo) | PLAY |
+        // FN sends Caps Lock — in macOS remap this keyboard's Caps Lock -> 🌐 Globe / Function (fn),
+        // making it the real Globe/Fn key (fn+arrows = PgUp/PgDn/Home/End, Globe+E = emoji, ...).
         default_layer {
             display-name = "QWERTY";
             bindings = <
-&kp ESC    &kp Q  &kp W  &kp E  &kp R  &kp T    &kp C_MUTE  &kp C_VOL_UP    &kp Y  &kp U  &kp I             &kp O     &kp P     &kp BSPC
-&kp TAB    &kp A  &kp S  &kp D  &kp F  &kp G    &kp GLOBE   &kp C_VOL_DN    &kp H  &kp J  &kp K             &kp L     &kp UP    &kp RET
+&mm_esc_grave  &kp Q  &kp W  &kp E  &kp R  &kp T   &kp C_MUTE  &kp C_VOL_UP    &kp Y  &kp U  &kp I             &kp O     &kp P     &kp BSPC
+&kp TAB        &kp A  &kp S  &kp D  &kp F  &kp G   &kp CAPS &kp C_VOL_DN    &kp H  &kp J  &kp K             &kp L     &kp UP    &kp RET
 &kp LSHFT  &kp Z  &kp X  &kp C  &kp V  &kp B                                &kp N  &kp M  &mm_comma_period  &kp LEFT  &kp DOWN  &kp RIGHT
                                 &kp LCTRL  &kp LALT  &kp LGUI               &kp SPACE  &mo 1  &kp C_PP
             >;
@@ -159,8 +174,8 @@
         num_sym_layer {
             display-name = "NUM/SYM";
             bindings = <
-&kp ESC    &mm_1_bslash  &mm_2_pipe  &kp N3    &kp N4     &kp N5      &kp LC(LG(Q))  &kp C_PREV  &kp N6    &mm_7_euro      &mm_8_right  &mm_9_degree  &mm_0_plusmin  &kp BSPC
-&kp TAB    &kp PLUS      &kp MINUS   &kp FSLH  &kp ASTRK  &kp EQUAL   &kp GLOBE    &kp C_NEXT    &kp AMPS  &mm_colon_semi  &kp DQT      &kp SQT       &kp UP         &kp RET
+&mm_esc_grave  &mm_1_bslash  &mm_2_pipe  &kp N3   &kp N4     &kp N5     &kp LC(LG(Q))  &kp C_PREV  &kp N6    &mm_7_euro      &mm_8_right  &mm_9_degree  &mm_0_plusmin  &kp BSPC
+&kp TAB        &kp PLUS      &kp MINUS   &kp FSLH &kp ASTRK  &kp EQUAL  &kp CAPS  &kp C_NEXT    &kp AMPS  &mm_colon_semi  &kp DQT      &kp SQT       &kp UP         &kp RET
 &kp LSHFT  &kp EXCL      &mm_lt_lbkt &mm_gt_rbkt &mm_lpar_lbrc &mm_rpar_rbrc                     &kp AT    &kp GRAVE       &mm_comma_period  &kp LEFT  &kp DOWN       &kp RIGHT
                                      &kp LCTRL  &kp LALT  &kp LGUI                               &kp SPACE  &trans  &none
             >;
