@@ -1,0 +1,20 @@
+# Copyright (c) 2024 Curtis Bollinger
+# SPDX-License-Identifier: MIT
+
+if SHIELD_PERPETUAL_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "Perpetual"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif
+
+if SHIELD_PERPETUAL_LEFT || SHIELD_PERPETUAL_RIGHT
+
+config ZMK_SPLIT
+    default y
+
+endif
+
