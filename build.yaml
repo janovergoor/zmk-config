@@ -55,18 +55,17 @@ include:
     shield: settings_reset
     snippet: studio-rpc-usb-uart
 
-  # --- Perpetual (48-key split, nice!nano v2 + nice!view) -------------------
-  # Shield, not a board: perpetual_left/right sit on a nice_nano_v2.
-  # No `nice_view_adapter` -- the shield's own boards/nice_nano_v2.overlay
-  # already provides the `&nice_view_spi` bus the nice_view shield needs.
+  # --- Perpetual (48-key split, nice!nano v2) -------------------------------
+  # A shield, not a board: perpetual_left/right sit on a nice_nano_v2.
+  # NO display shield -- the PCB has no nice!view or OLED header. The CS/SCK/P8
+  # nets terminate on the MCU jumper pads and go nowhere.
   # No `-DCONFIG_ZMK_STUDIO=y` yet: the shield has no `zmk,physical-layout`
-  # node, which Studio needs to draw a keymap. Add one and this can join the
-  # corne builds above.
+  # node, which Studio needs in order to draw a keymap.
   - board: nice_nano_v2
-    shield: perpetual_left nice_view
+    shield: perpetual_left
     artifact-name: perpetual_left
   - board: nice_nano_v2
-    shield: perpetual_right nice_view
+    shield: perpetual_right
     artifact-name: perpetual_right
 
   - board: nice_nano_v2
