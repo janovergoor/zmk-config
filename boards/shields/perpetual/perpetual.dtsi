@@ -6,10 +6,19 @@
 
 #include <dt-bindings/zmk/matrix_transform.h>
 
+#include "perpetual-layouts.dtsi"
+
+// The physical layout carries the transform, so `zmk,matrix-transform` is NOT
+// chosen here -- declaring both makes the layout and the chosen transform two
+// competing answers to the same question. This mirrors how a board with
+// physical layouts wires it up.
+&default_layout {
+    transform = <&default_transform>;
+};
+
 / {
     chosen {
         zmk,kscan = &kscan0;
-        zmk,matrix-transform = &default_transform;
     };
 
     /*
