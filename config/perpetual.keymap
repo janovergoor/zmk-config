@@ -168,7 +168,7 @@
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <200>;
-            bindings = <&none>, <&to GAME>;
+            bindings = <&none>, <&to 0>;
         };
     };
 
@@ -176,13 +176,13 @@
         compatible = "zmk,conditional-layers";
 
         func_layer {
-            if-layers = <SYMBOL NUMNAV>;
-            then-layer = <FUNC>;
+            if-layers = <1 2>;
+            then-layer = <3>;
         };
 
         game_func {
-            if-layers = <GAME_P FUNC>;
-            then-layer = <FUNC>;
+            if-layers = <3 3>;
+            then-layer = <3>;
         };
     };
 
@@ -192,15 +192,15 @@
         base_layer {
             display-name = "base";
             bindings = <
-&kp ESC  &kp Q           &kp W          &kp E           &kp R            &kp T             &kp Y        &kp U                 &kp I           &kp O          &kp P              &trans
-&trans   &hrm_l LMETA A  &hrm_l LALT S  &hrm_l LSHFT D  &hrm_l LCTRL F   &kp G             &kp H        &hrm_r LCTRL J        &hrm_r RSHFT K  &hrm_r LALT L  &hrm_r LMETA SEMI  &trans
-&trans   &kp Z           &kp X          &kp C           &kp V            &kp B             &kp N        &kp M                 &comma_morph    &dot_morph     &kp FSLH           &trans
-&trans   &trans          &kp C_MUTE     &kp DEL         &bksp_esc_morph  &lt SYMBOL SPACE  &lt 2 ENTER  &magic_shift LSHFT 0  &kp TAB         &td_to_game    &trans             &trans
+&kp ESC         &kp Q           &kp W          &kp E           &kp R            &kp T        &kp Y        &kp U                 &kp I           &kp O          &kp P              &kp DELETE
+&kp TAB         &hrm_l LMETA A  &hrm_l LALT S  &hrm_l LSHFT D  &hrm_l LCTRL F   &kp G        &kp H        &hrm_r LCTRL J        &hrm_r RSHFT K  &hrm_r LALT L  &hrm_r LMETA SEMI  &kp RET
+&kp LEFT_SHIFT  &kp Z           &kp X          &kp C           &kp V            &kp B        &kp N        &kp M                 &comma_morph    &kp UP_ARROW   &kp RIGHT          &trans
+&trans          &trans          &kp C_MUTE     &kp DEL         &bksp_esc_morph  &lt 1 SPACE  &lt 2 ENTER  &magic_shift LSHFT 0  &kp TAB         &kp LEFT       &trans             &kp DOWN_ARROW
             >;
 
             sensor-bindings =
                 <&inc_dec_kp C_VOL_UP C_VOL_DN>,
-                <&inc_dec_kp C_NEXT C_PREV>;
+                <&inc_dec_kp C_VOLUME_UP C_VOLUME_DOWN>;
         };
 
         symbol_layer {
@@ -212,7 +212,9 @@
 &trans  &trans             &trans            &trans             &trans             &trans     &trans    &trans              &trans             &trans            &trans             &trans
             >;
 
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
+            sensor-bindings =
+                <&inc_dec_kp C_NEXT C_PREV>,
+                <&inc_dec_kp C_NEXT C_PREV>;
         };
 
         numnav_layer {
@@ -222,30 +224,6 @@
 &trans  &hrm_l LMETA N0  &hrm_l LALT N4  &hrm_l LSHFT N5  &hrm_l LCTRL N6  &trans  &trans  &kp LEFT  &kp DOWN  &kp RIGHT  &hrm_r LMETA PG_DN  &trans
 &trans  &trans           &kp N1          &kp N2           &kp N3           &trans  &trans  &trans    &trans    &trans     &trans              &trans
 &trans  &trans           &trans          &trans           &trans           &trans  &trans  &trans    &trans    &trans     &trans              &trans
-            >;
-
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
-        };
-
-        game_layer {
-            display-name = "game";
-            bindings = <
-&trans  &kp G      &kp Q   &kp W     &kp E       &kp R      &trans     &trans  &trans  &trans    &trans  &trans
-&trans  &kp LSHFT  &kp A   &kp S     &kp D       &kp F      &trans     &kp H   &kp A   &kp E     &kp I   &trans
-&trans  &kp LCTRL  &kp Z   &kp X     &kp C       &kp V      &trans     &trans  &trans  &trans    &trans  &trans
-&trans  &trans     &trans  &kp LALT  &mo GAME_P  &kp SPACE  &kp ENTER  &trans  &trans  &to BASE  &trans  &trans
-            >;
-
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
-        };
-
-        game_plus_layer {
-            display-name = "game+";
-            bindings = <
-&trans  &kp ESC  &kp N7  &kp N8  &kp N9  &kp T   &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &mo 5    &kp N4  &kp N5  &kp N6  &kp M   &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &kp TAB  &kp N1  &kp N2  &kp N3  &kp B   &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans   &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp C_VOL_UP C_VOL_DN>;
