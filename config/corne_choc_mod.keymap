@@ -14,48 +14,182 @@
 };
 
 / {
+    behaviors {
+        // ---- non-standard shift relationships: tap = base glyph, Shift = top glyph ----
+        // base layer + num/sym: tap "," , Shift "."
+        mm_comma_period: mm_comma_period {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp COMMA>, <&kp DOT>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_1_bslash: mm_1_bslash {          // tap 1 , Shift backslash
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp N1>, <&kp BSLH>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_2_pipe: mm_2_pipe {              // tap 2 , Shift |
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp N2>, <&kp PIPE>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_7_euro: mm_7_euro {              // tap 7 , Shift € (mac Option char)
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp N7>, <&comb_euro>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_8_right: mm_8_right {            // tap 8 , Shift → (literal glyph, Unicode Hex Input)
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp N8>, <&uni_rarr>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_9_degree: mm_9_degree {          // tap 9 , Shift ° (mac Option char)
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp N9>, <&comb_degree>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_0_plusmin: mm_0_plusmin {        // tap 0 , Shift ± (mac Option char)
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp N0>, <&comb_plusmin>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_colon_semi: mm_colon_semi {      // tap : , Shift ;
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp COLON>, <&kp SEMI>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_lt_lbkt: mm_lt_lbkt {            // tap < , Shift [
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp LT>, <&kp LBKT>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_gt_rbkt: mm_gt_rbkt {            // tap > , Shift ]
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp GT>, <&kp RBKT>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_lpar_lbrc: mm_lpar_lbrc {        // tap ( , Shift {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp LPAR>, <&kp LBRC>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        mm_rpar_rbrc: mm_rpar_rbrc {        // tap ) , Shift }
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp RPAR>, <&kp RBRC>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        // ESC key: tap = Esc, Cmd+Esc -> Cmd+`  (mac window/tab cycling).
+        // keep-mods keeps Cmd applied to the morphed `. Needs ` working (ANSI, see notes).
+        mm_esc_grave: mm_esc_grave {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp ESC>, <&kp GRAVE>;
+            mods = <(MOD_LGUI|MOD_RGUI)>;
+            keep-mods = <(MOD_LGUI|MOD_RGUI)>;
+        };
+    };
+
+    macros {
+        // All special glyphs are typed via macOS "Unicode Hex Input": hold Option,
+        // type the 4-hex-digit codepoint, release Option. REQUIRES "Unicode Hex
+        // Input" to be the ACTIVE input source (see setup notes).
+        comb_euro: comb_euro {            // € = U+20AC
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N2 &kp N0 &kp A &kp C>, <&macro_release &kp LALT>;
+            label = "EURO";
+        };
+        comb_degree: comb_degree {        // ° = U+00B0
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N0 &kp N0 &kp B &kp N0>, <&macro_release &kp LALT>;
+            label = "DEGREE";
+        };
+        comb_plusmin: comb_plusmin {      // ± = U+00B1
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N0 &kp N0 &kp B &kp N1>, <&macro_release &kp LALT>;
+            label = "PLUSMIN";
+        };
+        uni_rarr: uni_rarr {              // → = U+2192
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N2 &kp N1 &kp N9 &kp N2>, <&macro_release &kp LALT>;
+            label = "URARR";
+        };
+    };
+
+    combos {
+        compatible = "zmk,combos";
+        // BT key (right thumb, pos 45) + number/bspc -> bluetooth control. NUM/SYM layer only.
+        combo_bt0   { timeout-ms = <75>; key-positions = <45 12>; bindings = <&bt BT_SEL 0>; layers = <1>; };
+        combo_bt1   { timeout-ms = <75>; key-positions = <45 1>;  bindings = <&bt BT_SEL 1>; layers = <1>; };
+        combo_bt2   { timeout-ms = <75>; key-positions = <45 2>;  bindings = <&bt BT_SEL 2>; layers = <1>; };
+        combo_btclr { timeout-ms = <75>; key-positions = <45 13>; bindings = <&bt BT_CLR>;   layers = <1>; };
+        // S + D pressed together -> "_"  (base + NUM/SYM). The "-" key's Shift->"_" still works too.
+        // Tight 40ms window to reduce accidental fires on "ds"/"sd" typing rolls (words, needs, wisdom...).
+        combo_under { timeout-ms = <40>; key-positions = <16 17>; bindings = <&kp UNDER>;    layers = <0 1>; };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
+        // ------------------------------------------------------------------------------------------
+        // | ESC | Q | W | E | R | T | MUTE | VOL+ | Y | U | I | O |  P  | BSPC |
+        // | TAB | A | S | D | F | G |  FN  | VOL- | H | J | K | L |  ^  | RET  |
+        // | SHFT| Z | X | C | V | B |             | N | M | ,/. | < | v |  >   |
+        //                 | CTRL | ALT | CMD |   | SPACE | L2(mo) | PLAY |
+        // FN (left inner): tap = Globe (emoji/input switch), hold = nav layer (layer 2):
+        //   fn+↑/↓/←/→ = PgUp/PgDn/Home/End,  fn+BkSp = forward Delete.
         default_layer {
             display-name = "QWERTY";
             bindings = <
-&kp TAB    &kp Q  &kp W  &kp E     &kp R  &kp T    &kp C_MUTE  &kp C_PP  &kp Y      &kp U  &kp I      &kp O    &kp P     &kp BSPC
-&kp LCTRL  &kp A  &kp S  &kp D     &kp F  &kp G    &kp LALT    &kp RALT  &kp H      &kp J  &kp K      &kp L    &kp SEMI  &kp SQT
-&kp LSHFT  &kp Z  &kp X  &kp C     &kp V  &kp B                          &kp N      &kp M  &kp COMMA  &kp DOT  &kp FSLH  &kp ESC
-                         &kp LGUI  &mo 1  &kp RET                        &kp SPACE  &mo 2  &kp RALT
+&mm_esc_grave  &kp Q  &kp W  &kp E  &kp R  &kp T   &kp C_MUTE  &kp C_VOL_UP    &kp Y  &kp U  &kp I             &kp O     &kp P     &kp BSPC
+&kp TAB        &kp A  &kp S  &kp D  &kp F  &kp G   &lt 2 GLOBE &kp C_VOL_DN    &kp H  &kp J  &kp K             &kp L     &kp UP    &kp RET
+&kp LSHFT  &kp Z  &kp X  &kp C  &kp V  &kp B                                &kp N  &kp M  &mm_comma_period  &kp LEFT  &kp DOWN  &kp RIGHT
+                                &kp LCTRL  &kp LALT  &kp LGUI               &kp SPACE  &mo 1  &kp C_PP
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
         };
 
-        lower_layer {
-            display-name = "NUMBER";
+        // ------------------------------------------------------------------------------------------
+        // | ESC | 1/\ | 2/| | 3/# | 4/$ | 5/% | LOCK | PREV | 6/^ | 7/€ | 8/→ | 9/° | 0/± | BSPC |
+        // | TAB |  +  | -/_ | //? |  *  |  =  |  FN  | NEXT |  &  | :/; |  "  |  '  |  ^  | RET  |
+        // | SHFT|  !  | </[ | >/] | (/{ | )/} |              |  @  | `/~ | ,/. | < | v |  >   |
+        //                 | CTRL | ALT | CMD |   | SPACE | (mo) | BT |
+        // LOCK = Ctrl+Cmd+Q.  Shift-pairs shown base/shift.  BT(pos45)+1/2/0 = profiles, BT+BkSp = clear.
+        num_sym_layer {
+            display-name = "NUM/SYM";
             bindings = <
-&kp TAB    &kp N1        &kp N2           &kp N3        &kp N4        &kp N5          &kp LCTRL  &kp RCTRL  &kp N6    &kp N7    &kp N8     &kp N9     &kp N0  &kp BSPC
-&kp LCTRL  &bt BT_SEL 0  &bt BT_SEL 1     &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4    &kp LALT   &kp RALT   &kp LEFT  &kp DOWN  &kp UP     &kp RIGHT  &trans  &trans
-&kp LSHFT  &bt BT_CLR    &rgb_ug RGB_TOG  &sys_reset    &bootloader   &studio_unlock                        &trans    &trans    &trans     &trans     &trans  &trans
-                                          &kp LGUI      &trans        &kp SPACE                             &kp LGUI  &trans    &kp SPACE
+&mm_esc_grave  &mm_1_bslash  &mm_2_pipe  &kp N3   &kp N4     &kp N5     &kp LC(LG(Q))  &kp C_PREV  &kp N6    &mm_7_euro      &mm_8_right  &mm_9_degree  &mm_0_plusmin  &kp BSPC
+&kp TAB        &kp PLUS      &kp MINUS   &kp FSLH &kp ASTRK  &kp EQUAL  &lt 2 GLOBE  &kp C_NEXT    &kp AMPS  &mm_colon_semi  &kp DQT      &kp SQT       &kp UP         &kp RET
+&kp LSHFT  &kp EXCL      &mm_lt_lbkt &mm_gt_rbkt &mm_lpar_lbrc &mm_rpar_rbrc                     &kp AT    &kp GRAVE       &mm_comma_period  &kp LEFT  &kp DOWN       &kp RIGHT
+                                     &kp LCTRL  &kp LALT  &kp LGUI                               &kp SPACE  &trans  &none
             >;
         };
 
-        raise_layer {
-            display-name = "SYMBOL";
+        // Hold FN -> mac-style navigation (true mac Fn can't be emulated, so this layer does it):
+        //   fn+↑=PgUp  fn+↓=PgDn  fn+←=Home  fn+→=End  fn+BkSp=forward Delete
+        fn_layer {
+            display-name = "FN";
             bindings = <
-&kp TAB    &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp LCTRL  &kp RCTRL  &kp CARET  &kp AMPS   &kp ASTRK     &kp LPAR      &kp RPAR    &kp BSPC
-&kp LCTRL  &trans    &trans  &trans    &trans    &trans     &kp LALT   &kp RALT   &kp MINUS  &kp EQUAL  &kp LBKT      &kp RBKT      &kp BSLH    &kp GRAVE
-&kp LSHFT  &trans    &trans  &trans    &trans    &trans                           &kp UNDER  &kp PLUS   &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_CLR  &kp TILDE
-                             &kp LGUI  &trans    &kp SPACE                        &kp RET    &trans     &kp RALT
-            >;
-        };
-
-        extra_layer_1 {
-            display-name = "EXTRA";
-            bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
-                        &trans  &trans  &trans                  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans    &trans  &trans  &trans  &trans  &trans     &kp DEL
+&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans    &trans  &trans  &trans  &trans  &kp PG_UP  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                      &trans  &trans  &trans  &kp HOME   &kp PG_DN  &kp END
+                                &trans  &trans  &trans              &trans  &trans  &trans
             >;
         };
     };
