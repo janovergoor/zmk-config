@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2024 Curtis Bollinger
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include "perpetual.dtsi"
+
+&default_transform {
+    col-offset = <6>;
+};
+
+/*
+ * Same six pins as the left half, in reverse: the halves are one mirrored PCB,
+ * so a net lands on the same MCU pin either way and only the left-to-right
+ * column order flips. See perpetual_left.overlay for why these pins.
+ */
+&kscan0 {
+    col-gpios
+        = <&pro_micro 19 GPIO_ACTIVE_HIGH>  // col_inner  (hole 18)
+        , <&pro_micro 21 GPIO_ACTIVE_HIGH>  // col_index  (hole 20)
+        , <&pro_micro 15 GPIO_ACTIVE_HIGH>  // col_middle (hole 16)
+        , <&pro_micro 18 GPIO_ACTIVE_HIGH>  // col_ring   (hole 17)
+        , <&pro_micro 14 GPIO_ACTIVE_HIGH>  // col_pinky  (hole 15) -- also the encoder switch
+        , <&pro_micro 20 GPIO_ACTIVE_HIGH>  // col_extra  (hole 19)
+        ;
+};
+
+&right_encoder {
+    status = "okay";
+};
+
+&sensors {
+    sensors = <&right_encoder>;
+};

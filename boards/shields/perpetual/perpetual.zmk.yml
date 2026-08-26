@@ -1,0 +1,13 @@
+file_format: "1"
+id: perpetual
+name: Perpetual
+type: shield
+url: https://github.com/janovergoor/perpetual
+requires: [pro_micro]
+features:
+  - keys
+  - encoder
+
+siblings:
+  - perpetual_left
+  - perpetual_right

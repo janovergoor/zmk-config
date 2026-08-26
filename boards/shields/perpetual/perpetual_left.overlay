@@ -1,0 +1,35 @@
+/*
+ * Copyright (c) 2024 Curtis Bollinger
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include "perpetual.dtsi"
+
+/*
+ * Column pins are assigned for PCB routability, not tidiness -- the six column
+ * trunks all approach the MCU from the left and thread the 0.84mm gaps between
+ * its through-holes, and which pin each one lands on decides whether they cross.
+ * The natural order (extra..inner) forces nine crossings; this assignment forces
+ * none. Source of truth is the `mcu:` footprint in the PCB repo's
+ * ergogen/config.yaml -- if it changes, this list changes with it, because the
+ * ORDER of col-gpios is what defines each column's matrix index.
+ */
+&kscan0 {
+    col-gpios
+        = <&pro_micro 20 GPIO_ACTIVE_HIGH>  // col_extra  (hole 19)
+        , <&pro_micro 14 GPIO_ACTIVE_HIGH>  // col_pinky  (hole 15) -- also the encoder switch
+        , <&pro_micro 18 GPIO_ACTIVE_HIGH>  // col_ring   (hole 17)
+        , <&pro_micro 15 GPIO_ACTIVE_HIGH>  // col_middle (hole 16)
+        , <&pro_micro 21 GPIO_ACTIVE_HIGH>  // col_index  (hole 20)
+        , <&pro_micro 19 GPIO_ACTIVE_HIGH>  // col_inner  (hole 18)
+        ;
+};
+
+&left_encoder {
+    status = "okay";
+};
+
+&sensors {
+    sensors = <&left_encoder>;
+};

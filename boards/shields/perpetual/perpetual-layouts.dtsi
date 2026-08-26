@@ -1,0 +1,76 @@
+/*
+ * Copyright (c) 2024 Curtis Bollinger
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * GENERATED FILE -- do not edit by hand.
+ *   python3 scripts/gen_physical_layout.py
+ * Source geometry: perpetual/perpetual.json, itself generated from
+ * perpetual/ergogen/config.yaml. Edit the layout there, regenerate both.
+ *
+ * The Nth entry below is key position N, which is also the Nth entry of the
+ * transform `map` in perpetual.dtsi and the Nth binding in every keymap layer.
+ * All three orders must agree; scripts/sync.py --check verifies it.
+ *
+ * Units are hundredths: 100 = 1 key unit, rotation in 1/100 degree.
+ */
+
+#include <physical_layouts.dtsi>
+
+/ {
+    default_layout: default_layout {
+        compatible = "zmk,physical-layout";
+        display-name = "Perpetual";
+
+        keys  //                       w    h     x     y   rot    rx    ry
+            = <&key_physical_attrs  125  100     0   147  -800    50   197>
+            , <&key_physical_attrs  100  100   112   131  -800   162   181>
+            , <&key_physical_attrs  100  100   223    40  -400   273    90>
+            , <&key_physical_attrs  100  100   337     0     0     0     0>
+            , <&key_physical_attrs  100  100   437    35     0     0     0>
+            , <&key_physical_attrs  100  100   537    50     0     0     0>
+            , <&key_physical_attrs  100  100  1050    50     0     0     0>
+            , <&key_physical_attrs  100  100  1150    35     0     0     0>
+            , <&key_physical_attrs  100  100  1250     0     0     0     0>
+            , <&key_physical_attrs  100  100  1364    40   400  1414    90>
+            , <&key_physical_attrs  100  100  1475   131   800  1525   181>
+            , <&key_physical_attrs  125  100  1562   147   800  1637   197>
+            , <&key_physical_attrs  125  100    14   246  -800    64   296>
+            , <&key_physical_attrs  100  100   126   230  -800   176   280>
+            , <&key_physical_attrs  100  100   230   140  -400   280   190>
+            , <&key_physical_attrs  100  100   337   100     0     0     0>
+            , <&key_physical_attrs  100  100   437   135     0     0     0>
+            , <&key_physical_attrs  100  100   537   150     0     0     0>
+            , <&key_physical_attrs  100  100  1050   150     0     0     0>
+            , <&key_physical_attrs  100  100  1150   135     0     0     0>
+            , <&key_physical_attrs  100  100  1250   100     0     0     0>
+            , <&key_physical_attrs  100  100  1357   140   400  1407   190>
+            , <&key_physical_attrs  100  100  1461   230   800  1511   280>
+            , <&key_physical_attrs  125  100  1548   246   800  1623   296>
+            , <&key_physical_attrs  125  100    28   345  -800    78   395>
+            , <&key_physical_attrs  100  100   140   329  -800   190   379>
+            , <&key_physical_attrs  100  100   237   239  -400   287   289>
+            , <&key_physical_attrs  100  100   337   200     0     0     0>
+            , <&key_physical_attrs  100  100   437   235     0     0     0>
+            , <&key_physical_attrs  100  100   537   250     0     0     0>
+            , <&key_physical_attrs  100  100  1050   250     0     0     0>
+            , <&key_physical_attrs  100  100  1150   235     0     0     0>
+            , <&key_physical_attrs  100  100  1250   200     0     0     0>
+            , <&key_physical_attrs  100  100  1350   239   400  1400   289>
+            , <&key_physical_attrs  100  100  1447   329   800  1497   379>
+            , <&key_physical_attrs  125  100  1534   345   800  1609   395>
+            , <&key_physical_attrs  100  100   244   339  -400   294   389>
+            , <&key_physical_attrs  100  100   637   304  3000   687   354>
+            , <&key_physical_attrs  100  100   352   335     0     0     0>
+            , <&key_physical_attrs  100  100   478   348  1500   528   398>
+            , <&key_physical_attrs  100  100   586   392  3000   636   442>
+            , <&key_physical_attrs  100  150   692   443  4500   742   493>
+            , <&key_physical_attrs  100  150   894   443 -4500   944   493>
+            , <&key_physical_attrs  100  100  1000   392 -3000  1050   442>
+            , <&key_physical_attrs  100  100  1108   348 -1500  1158   398>
+            , <&key_physical_attrs  100  100  1235   335     0     0     0>
+            , <&key_physical_attrs  100  100   949   304 -3000   999   354>
+            , <&key_physical_attrs  100  100  1343   339   400  1393   389>
+            ;
+    };
+};
