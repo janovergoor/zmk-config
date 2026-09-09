@@ -141,6 +141,13 @@ KEY_LABEL = {
     "QMARK": "?", "UNDER": "_", "TILDE": "~", "GRAVE": "`", "PIPE": "|",
     "LBRC": "{", "RBRC": "}", "LPAR": "(", "RPAR": ")",
     "LBKT": "[", "RBKT": "]", "BSLH": "\\", "FSLH": "/",
+    # mac Option chords -- these produce a glyph on the standard U.S. layout, so
+    # the cap should show the glyph rather than the keycode that generates it.
+    # (This is how SYMBOL types € ° ± ß § ∆ without Unicode Hex Input, which
+    # would otherwise swallow Option and break opt+arrow word navigation.)
+    "LS(LA(N2))": "€", "LS(LA(N8))": "°", "LS(LA(EQUAL))": "±",
+    "LA(S)": "ß", "LA(N6)": "§", "LA(J)": "∆",
+    "LC(LG(Q))": "Lock",
 }
 
 LAYER_NAMES = {0: "base", 1: "symbol", 2: "numnav"}

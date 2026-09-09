@@ -66,50 +66,19 @@
     };
 
     macros {
-        // All special glyphs are typed via macOS "Unicode Hex Input": hold Option,
-        // type the 4-hex-digit codepoint, release Option. REQUIRES "Unicode Hex
-        // Input" to be the ACTIVE input source.
-        comb_euro: comb_euro {            // € = U+20AC
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N2 &kp N0 &kp A &kp C>, <&macro_release &kp LALT>;
-            label = "EURO";
-        };
-        comb_degree: comb_degree {        // ° = U+00B0
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N0 &kp N0 &kp B &kp N0>, <&macro_release &kp LALT>;
-            label = "DEGREE";
-        };
-        comb_plusmin: comb_plusmin {      // ± = U+00B1
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N0 &kp N0 &kp B &kp N1>, <&macro_release &kp LALT>;
-            label = "PLUSMIN";
-        };
-        uni_rarr: uni_rarr {              // → = U+2192
+        // The ONE remaining Unicode Hex Input macro. Every other glyph on SYMBOL
+        // is a native Option chord in the standard U.S. layout (see the layer
+        // comment), so the hex-input input source is no longer needed for them --
+        // which is what keeps Option free for word navigation (opt+arrow, opt+bspc).
+        //
+        // U+2192 has no Option chord in the U.S. layout, so this key alone still
+        // requires "Unicode Hex Input" to be the ACTIVE input source: hold Option,
+        // type the 4 hex digits, release. On the U.S. layout it types nothing.
+        uni_rarr: uni_rarr {              // -> = U+2192
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
             bindings = <&macro_press &kp LALT>, <&macro_tap &kp N2 &kp N1 &kp N9 &kp N2>, <&macro_release &kp LALT>;
             label = "URARR";
-        };
-        uni_szlig: uni_szlig {            // ß = U+00DF
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N0 &kp N0 &kp D &kp F>, <&macro_release &kp LALT>;
-            label = "SZLIG";
-        };
-        uni_delta: uni_delta {            // Δ = U+0394
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N0 &kp N3 &kp N9 &kp N4>, <&macro_release &kp LALT>;
-            label = "DELTA";
-        };
-        uni_sect: uni_sect {              // § = U+00A7
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N0 &kp N0 &kp A &kp N7>, <&macro_release &kp LALT>;
-            label = "SECT";
         };
     };
 
@@ -172,19 +141,40 @@
 
         // ------------------------------------------------------------------------------------------
         // | ESC | < | > | € | / | + |  ±  |  →  | ; | $ | ^ | ° |  \  | BSPC |
-        // | TAB | # | ß | Δ | * | - |GLOBE|  §  | @ | ` | " | ' | :/; | RET  |
+        // | TAB | # | ß | ∆ | * | - |GLOBE|  §  | @ | ` | " | ' | :/; | RET  |
         // | SHFT| _ | | | & | % | = |             |  ! | ~ | ,/< | ./> |  ?  |  /  |
         //                 | CTRL | ALT | CMD |   | SPACE | ▽ |    |
         // "~~" is gone: keys the layout repeats are BOUND here, not transparent.
-        // Digits are NOT here -- they live on NUMNAV. `<` and `>` keep their
-        // Shift->[ ] morphs as a fallback for the bracket combos.
+        // Digits are NOT here -- they live on NUMNAV.
+        //
+        // GLYPHS. Six of the seven are native Option chords in the standard U.S.
+        // layout, sent as plain &kp with implicit mods -- no macro, no special
+        // input source, and Option keeps working for word navigation:
+        //
+        //     €  opt+shift+2     &kp LS(LA(N2))
+        //     °  opt+shift+8     &kp LS(LA(N8))
+        //     ±  opt+shift+=     &kp LS(LA(EQUAL))
+        //     ß  opt+s           &kp LA(S)
+        //     §  opt+6           &kp LA(N6)
+        //     ∆  opt+j           &kp LA(J)
+        //
+        // opt+j is U+2206 INCREMENT, not U+0394 GREEK CAPITAL DELTA -- visually
+        // near-identical, and the more correct character for engineering notation
+        // anyway. The U.S. layout has no chord for real Δ.
+        //
+        // → (pos 7) is the exception: no Option chord exists, so it stays on the
+        // uni_rarr hex macro and only works while "Unicode Hex Input" is active.
+        //
+        // `<` and `>` are plain &kp here -- corne_choc_mod's Shift->[ ] morphs are
+        // not carried over (see the file header), so the bracket combos have no
+        // single-key fallback on this layout.
         symbol_layer {
             display-name = "SYMBOL";
             bindings = <
-&mm_esc_grave &kp LT    &kp GT     &comb_euro &kp FSLH  &kp PLUS  &comb_plusmin   &uni_rarr    &kp SEMI     &kp DLLR     &kp CARET    &comb_degree &kp BSLH       &kp BSPC
-&kp TAB       &kp HASH  &uni_szlig &uni_delta &kp ASTRK &kp MINUS &kp GLOBE       &uni_sect    &kp AT       &kp GRAVE    &kp DQT      &kp SQT      &mm_colon_semi &kp RET
-&kp LSHFT     &kp UNDER &kp PIPE   &kp AMPS   &kp PRCNT &kp EQUAL                              &kp EXCL     &kp TILDE    &kp COMMA    &kp DOT      &kp QMARK      &kp FSLH
-                                   &kp LCTRL  &kp LALT  &kp LGUI                               &kp SPACE    &trans       &none
+&mm_esc_grave &kp LT    &kp GT    &kp LS(LA(N2)) &kp FSLH  &kp PLUS  &kp LS(LA(EQUAL)) &uni_rarr  &kp SEMI  &kp DLLR  &kp CARET &kp LS(LA(N8)) &kp BSLH       &kp BSPC
+&kp TAB       &kp HASH  &kp LA(S) &kp LA(J)      &kp ASTRK &kp MINUS &kp GLOBE         &kp LA(N6) &kp AT    &kp GRAVE &kp DQT   &kp SQT        &mm_colon_semi &kp RET
+&kp LSHFT     &kp UNDER &kp PIPE  &kp AMPS       &kp PRCNT &kp EQUAL                              &kp EXCL  &kp TILDE &kp COMMA &kp DOT        &kp QMARK      &kp FSLH
+                                  &kp LCTRL      &kp LALT  &kp LGUI                               &kp SPACE &trans    &none
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
@@ -194,7 +184,12 @@
         // | ESC | 7 | 8 | 9 | / | + | PLAY | NEXT | PGUP | HOME | ↑ | END | DEL | BSPC |
         // | TAB | 4 | 5 | 6 | * | - |GLOBE | PREV | PGDN |  ←   | ↓ |  →  |     | RET  |
         // | SHFT| 1 | 2 | 3 | 0 | = |               | BT0 | BT1 | BT2 | BTclr |  |  |
-        //                 | CTRL | ALT | CMD |   | SPACE | SLEEP | ▽ |
+        //                 | CTRL | ALT | CMD |   | SPACE | LOCK | ▽ |
+        // LOCK (pos 44) = Ctrl+Cmd+Q. This was &kp C_SLEEP, which never worked:
+        // C_SLEEP is Consumer-page usage 0x32 and macOS does not act on it (ZMK's
+        // code table marks it untested on mac, confirmed only on Linux). C_POWER
+        // is the code mac honours, but only on a deliberate press -- a tap is
+        // ignored by design -- so a plain modifier chord is the better key here.
         // Numpad on the LEFT so the right thumb can hold the layer key (pos 45).
         // Right hand is a full nav block: HOME/↑/END over ←/↓/→, PgUp/PgDn on the
         // index stretch, Del next to Bspc.
@@ -204,7 +199,7 @@
 &mm_esc_grave &kp N7    &kp N8     &kp N9     &kp FSLH  &kp PLUS  &kp C_PP        &kp C_NEXT   &kp PG_UP    &kp HOME     &kp UP       &kp END      &kp DEL        &kp BSPC
 &kp TAB       &kp N4    &kp N5     &kp N6     &kp ASTRK &kp MINUS &kp GLOBE       &kp C_PREV   &kp PG_DN    &kp LEFT     &kp DOWN     &kp RIGHT    &none          &kp RET
 &kp LSHFT     &kp N1    &kp N2     &kp N3     &kp N0    &kp EQUAL                              &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_CLR   &none          &none
-                                   &kp LCTRL  &kp LALT  &kp LGUI                               &kp SPACE    &kp C_SLEEP  &trans
+                                   &kp LCTRL  &kp LALT  &kp LGUI                               &kp SPACE    &kp LC(LG(Q)) &trans
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
