@@ -156,6 +156,11 @@
         sleep {
             bindings = <&kp LC(LG(Q))>;
             key-positions = <13 43>;
+        };
+
+        plusminus {
+            bindings = <&kp LS(LA(EQUAL))>;
+            key-positions = <5 19>;
         };  // N+M -> ]
         // These six are the only combos. corne_choc_mod's combo_under (S+D -> _)
         // and combo_bt0/1/2/clr are deliberately gone: "_" has its own key on
