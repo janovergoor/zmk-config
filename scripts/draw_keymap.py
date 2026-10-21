@@ -41,8 +41,10 @@ def read_layers(path):
     src = src[src.index("keymap {"):]
 
     layers = []
-    for m in re.finditer(r"(\w+)\s*\{\s*display-name = \"([^\"]*)\";\s*bindings = <", src):
-        name, disp = m.group(1), m.group(2)
+    # display-name is optional -- the bluetooth layer has none, and a layer that
+    # does not announce itself is still a layer.
+    for m in re.finditer(r"(\w+)\s*\{\s*(?:display-name = \"([^\"]*)\";\s*)?bindings = <", src):
+        name, disp = m.group(1), m.group(2) or m.group(1)
         start = m.end()
         end = src.index(">;", start)
         body = src[start:end]
@@ -97,16 +99,30 @@ def read_behaviors(path):
 
 
 def read_combos(path):
-    """-> [(name, [positions], binding, [layers])]"""
+    """-> [(name, [positions], binding, [layers] or None)]
+    Properties are read out one at a time rather than matched in a fixed order:
+    devicetree does not care about ordering, and insisting on one meant a single
+    added property (require-prior-idle-ms) silently dropped every combo. `layers`
+    is optional too -- a combo without it is global in ZMK, and comes back here as
+    None for the caller to expand once it knows how many layers there are.
+    """
     src = open(path, encoding="utf-8").read()
+    try:
+        block = src[src.index("combos {"):src.index("keymap {")]
+    except ValueError:
+        return []
     out = []
-    for m in re.finditer(r"(\w+)\s*\{\s*timeout-ms = <(\d+)>;\s*"
-                         r"key-positions = <([^>]*)>;\s*bindings = <([^>]*)>;\s*"
-                         r"layers = <([^>]*)>;", src):
-        out.append((m.group(1),
-                    [int(x) for x in m.group(3).split()],
-                    m.group(4).strip(),
-                    [int(x) for x in m.group(5).split()]))
+    for m in re.finditer(r"(\w+)\s*\{(.*?)\};", block, re.S):
+        name, body = m.group(1), m.group(2)
+        pos = re.search(r"key-positions = <([^>]*)>", body)
+        bind = re.search(r"bindings = <([^>]*)>", body)
+        if not (pos and bind):
+            continue
+        lyr = re.search(r"layers = <([^>]*)>", body)
+        out.append((name,
+                    [int(x) for x in pos.group(1).split()],
+                    bind.group(1).strip(),
+                    [int(x) for x in lyr.group(1).split()] if lyr else None))
     return out
 
 
@@ -141,6 +157,10 @@ KEY_LABEL = {
     "QMARK": "?", "UNDER": "_", "TILDE": "~", "GRAVE": "`", "PIPE": "|",
     "LBRC": "{", "RBRC": "}", "LPAR": "(", "RPAR": ")",
     "LBKT": "[", "RBKT": "]", "BSLH": "\\", "FSLH": "/",
+    # the keymap-editor bot writes the long alias for these, so both spellings
+    # have to resolve or the cap reads "Slash" / "Question" / "Period".
+    "SLASH": "/", "QUESTION": "?", "PERIOD": ".", "ASTERISK": "*",
+    "DOLLAR": "$", "SEMICOLON": ";", "APOSTROPHE": "'", "EXCLAMATION": "!",
     # mac Option chords -- these produce a glyph on the standard U.S. layout, so
     # the cap should show the glyph rather than the keycode that generates it.
     # (This is how SYMBOL types € ° ± ß § ∆ without Unicode Hex Input, which
@@ -162,6 +182,7 @@ SHIFT_PAIR = {
     "COMMA": "<", "DOT": ">", "FSLH": "?", "SEMI": ":", "SQT": '"',
     "GRAVE": "~", "MINUS": "_", "EQUAL": "+", "BSLH": "|",
     "LBKT": "{", "RBKT": "}",
+    "SLASH": "?", "PERIOD": ">", "SEMICOLON": ":", "APOSTROPHE": '"',
 }
 
 
@@ -341,11 +362,15 @@ def svg_for(layout, bindings, sensor_pos, unbound, combos=(), layer_idx=0,
         (x1, y1), (x2, y2) = cs
         mx, my = (x1 + x2) / 2, (y1 + y2) / 2
         glyph = bind.replace("&kp ", "").strip()
-        glyph = {"LBRC": "{", "RBRC": "}", "LPAR": "(", "RPAR": ")",
-                 "LBKT": "[", "RBKT": "]", "UNDER": "_"}.get(glyph, glyph)
+        glyph = label(glyph)   # KEY_LABEL already knows every glyph a combo emits
         out.append('<g class="combo">')
         out.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f"/>' % (x1, y1, x2, y2))
-        out.append('<circle cx="%.1f" cy="%.1f" r="12"/>' % (mx, my))
+        if len(glyph) > 1:
+            w = 9 * len(glyph) + 10
+            out.append('<rect x="%.1f" y="%.1f" width="%.1f" height="24" rx="12"/>'
+                       % (mx - w / 2, my - 12, w))
+        else:
+            out.append('<circle cx="%.1f" cy="%.1f" r="12"/>' % (mx, my))
         out.append('<text x="%.1f" y="%.1f">%s</text>' % (mx, my + 5, esc(glyph)))
         out.append("</g>")
 
@@ -441,7 +466,7 @@ svg.board{display:block; width:100%; min-width:760px; height:auto}
 .k-inherit .sub{fill:var(--ink-3); opacity:.7}
 .k-uni .main{font-size:19px}
 .combo line{stroke:var(--enc); stroke-width:2.4; stroke-linecap:round; opacity:.5}
-.combo circle{fill:var(--enc); stroke:var(--panel); stroke-width:2}
+.combo circle,.combo rect{fill:var(--enc); stroke:var(--panel); stroke-width:2}
 .combo text{text-anchor:middle; fill:var(--panel); font:600 14px "IBM Plex Mono",ui-monospace,monospace}
 .k-enc rect{stroke:var(--enc); stroke-width:1.8; stroke-dasharray:5 3}
 
@@ -522,6 +547,9 @@ def main():
     layers = read_layers(a.keymap)
     layout, sensors = read_layout(a.layout)
     combos = read_combos(a.keymap)
+    # a combo with no `layers` runs on every layer, so draw it on every layer
+    combos = [(n, pos, b, list(range(len(layers))) if lyrs is None else lyrs)
+              for n, pos, b, lyrs in combos]
     beh_map = read_behaviors(a.keymap)
 
     if not layers:

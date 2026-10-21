@@ -97,74 +97,116 @@
         compatible = "zmk,combos";
 
         /*
-         * BRACKETS -- left hand opens, right hand closes, one row per pair:
+         * BRACKETS -- left hand opens, right hand closes, one row per pair.
+         * Since "move parentheses in" (e8ca9d4) these sit one column inward, on
+         * the middle+index fingers rather than the index stretch:
          *
-         *     R+T  {        }  Y+U        top row
-         *     F+G  (        )  H+J        home row   <- most frequent pair, easiest reach
-         *     V+B  [        ]  N+M        bottom row
+         *     E+R  {        }  U+I        top row
+         *     D+F  (        )  J+K        home row   <- most frequent pair, easiest reach
+         *     C+V  [        ]  M+,        bottom row
          *
-         * Every one of these six is a SAME-FINGER pair in QWERTY (both keys sit
-         * under the index finger, one of them a stretch). That is the property
-         * that makes them safe: you physically cannot roll a same-finger pair
-         * fast, so ordinary typing releases the first key before the second goes
-         * down and the combo never fires. "rt" is the only common English bigram
-         * among them (art, part, start) and that is exactly why it being
-         * same-finger matters.
+         * Moving them in cost the property the outer positions had for free.
+         * R+T, Y+U, F+G, H+J, V+B and N+M were all SAME-FINGER pairs: you
+         * physically cannot roll a same-finger pair fast, so the 50ms window was
+         * enough on its own. Middle+index pairs are the EASIEST rolls on the
+         * board, and two of the six are ordinary English sequences -- "er"
+         * (very, here, there, over) and "m," (problem, system, them). That is
+         * why { and ] started appearing in plain prose.
          *
-         * Active on base and SYMBOL. Not on NUMNAV, where 34/35 are BT_SEL keys.
-         * 50ms: loose enough that splaying two fingers onto adjacent index keys
-         * registers, tight enough that a same-finger roll never does.
+         * require-prior-idle-ms replaces the lost same-finger safety: the combo
+         * is ignored if any non-modifier key was pressed within 150ms before it.
+         * A mid-word roll always has a keystroke right behind it, so it is
+         * blocked; a deliberate bracket, reached after the small pause you take
+         * anyway, is not. 150ms is what the home-row mods in perpetual.keymap
+         * already use.
+         *
+         * Both conditions must now hold for a combo to fire -- 150ms of quiet
+         * BEFORE it and both keys inside 50ms -- so fast typing fails the first
+         * and slow typing fails the second. The gap left is a word that STARTS
+         * with one of the pairs, rolled fast, straight after a pause ("error").
+         * If that still bites, move combo_lbrc back out to <4 5>, where "rt" is
+         * same-finger again and needs no guard at all.
+         *
+         * Active on base and SYMBOL only. NUMNAV puts ~ and , on 35/36, and the
+         * bluetooth layer is left alone.
          */
 
         combo_lbrc {
             timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
             key-positions = <4 3>;
             bindings = <&kp LBRC>;
             layers = <0 1>;
-        };  // R+T -> {
+        };  // E+R -> {
         combo_rbrc {
             timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
             key-positions = <9 10>;
             bindings = <&kp RBRC>;
             layers = <0 1>;
-        };  // Y+U -> }
+        };  // U+I -> }
         combo_lpar {
             timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
             key-positions = <18 17>;
             bindings = <&kp LPAR>;
             layers = <0 1>;
-        };  // F+G -> (
+        };  // D+F -> (
         combo_rpar {
             timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
             key-positions = <23 24>;
             bindings = <&kp RPAR>;
             layers = <0 1>;
-        };  // H+J -> )
+        };  // J+K -> )
         combo_lbkt {
             timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
             key-positions = <32 31>;
             bindings = <&kp LBKT>;
             layers = <0 1>;
-        };  // V+B -> [
+        };  // C+V -> [
         combo_rbkt {
             timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
             key-positions = <35 36>;
             bindings = <&kp RBKT>;
             layers = <0 1>;
-        };
+        };  // M+, -> ]
 
+        // BSPC + SPACE -> lock screen (Ctrl+Cmd+Q). The node name is historical:
+        // this was &kp C_SLEEP on a key, which macOS ignores. No `layers`, so it
+        // is live on every layer.
+        //
+        // This one arguably needed the guard most. Backspace followed straight
+        // by a space is an ordinary correction, and inside the 50ms default
+        // window that was a screen lock mid-sentence.
         sleep {
-            bindings = <&kp LC(LG(Q))>;
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
             key-positions = <13 43>;
-        };
+            bindings = <&kp LC(LG(Q))>;
+        };  // BSPC+SPACE -> lock
 
+        // T+G -> ±. No `layers`, so it is global, and that is the point: on
+        // SYMBOL and NUMNAV positions 5 and 19 are + and -, so the combo reads
+        // as "press + and - together". (SYMBOL also has ± on its own key, pos 6.)
+        //
+        // Deliberately NO idle guard. T and G are both the left index finger --
+        // this one still HAS the same-finger property the bracket pairs gave up,
+        // so it cannot be rolled by accident and needs no protecting, and "tg" is
+        // not an English sequence either. Guarding it would only get in the way
+        // of a deliberate ± typed straight after a digit. If it ever moves off
+        // the index column, give it the 150ms guard like the brackets.
         plusminus {
-            bindings = <&kp LS(LA(EQUAL))>;
+            timeout-ms = <50>;
             key-positions = <5 19>;
-        };  // N+M -> ]
-        // These six are the only combos. corne_choc_mod's combo_under (S+D -> _)
-        // and combo_bt0/1/2/clr are deliberately gone: "_" has its own key on
-        // SYMBOL, and bluetooth has real keys on NUMNAV (positions 34-37).
+            bindings = <&kp LS(LA(EQUAL))>;
+        };  // T+G -> ±
+
+        // corne_choc_mod's combo_under (S+D -> _) and combo_bt0/1/2/clr are not
+        // carried over: "_" has its own key on SYMBOL, and bluetooth has its own
+        // layer now rather than keys borrowed from NUMNAV.
     };
 
     keymap {
