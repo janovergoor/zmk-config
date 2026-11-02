@@ -170,7 +170,7 @@ KEY_LABEL = {
     "LC(LG(Q))": "Lock",
 }
 
-LAYER_NAMES = {0: "base", 1: "symbol", 2: "numnav"}
+LAYER_NAMES = {0: "base", 1: "symbol", 2: "numnav", 3: "bt"}
 
 # What a plain US key gives you with Shift held. Drawn small above the tap glyph
 # so a key reads like the cap it is: "<" over ",", "?" over "/".
@@ -233,7 +233,7 @@ def pretty(binding, beh_map=None):
         if shifted:
             return (label(args[0]), shifted, "kp", True)
         return (label(args[0]), "", "kp", False)
-    if beh in ("&hrm_l", "&hrm_r"):
+    if beh in ("&hrm_l", "&hrm_r", "&mt"):
         return (label(args[1]), label(args[0]), "hold", False)
     if beh == "&lt":
         lyr = LAYER_NAMES.get(int(args[0]), args[0]) if args[0].isdigit() else args[0].lower()
