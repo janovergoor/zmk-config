@@ -233,7 +233,7 @@ def pretty(binding, beh_map=None):
         if shifted:
             return (label(args[0]), shifted, "kp", True)
         return (label(args[0]), "", "kp", False)
-    if beh in ("&hrm_l", "&hrm_r", "&mt"):
+    if beh in ("&hrm_l", "&hrm_r", "&mt", "&ht_shift_0"):
         return (label(args[1]), label(args[0]), "hold", False)
     if beh == "&lt":
         lyr = LAYER_NAMES.get(int(args[0]), args[0]) if args[0].isdigit() else args[0].lower()

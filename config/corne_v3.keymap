@@ -12,20 +12,23 @@
  *     NNAV stays on pos 44. That frees the old SYM slot (pos 39) for a real key.
  *   - The bottom-right two keys become the standard US pairs: pos 38 `/` (shift
  *     `?`) and pos 39 `'` (shift `"`).
- *   - SYMBOL is substantially re-laid-out: -> comes back on pos 1, `\` moves to
+ *   - SYMBOL is substantially re-laid-out: LOCK takes pos 1, `\` moves to
  *     pos 9, DEL appears on pos 12, and @ ! & # $ move to the home row.
  *   - NUMNAV's left Shift becomes tap-0 / hold-Shift, and = % ~ ` fill the row.
- *   - The BSPC+SPACE lock combo is gone; LOCK is now a key (SYMBOL pos 7).
+ *   - The BSPC+SPACE lock combo is gone; LOCK is now a key (SYMBOL pos 1).
  *   - Bracket combos now run on NUMNAV too; [ ] are suppressed on SYMBOL.
  *
  * THE TWO INNER COLUMNS (positions 6/20 on the left, 7/21 on the right).
  *
  *   The RIGHT column is exactly what v06_v2 draws:
  *       base    pos 7 BT (&mo 3)        pos 21 FN (Globe)
- *       SYMBOL  pos 7 LOCK             pos 21 FN (Globe)
+ *       SYMBOL  pos 7 transparent      pos 21 FN (Globe)
  *       NUMNAV  pos 7 PgUp             pos 21 PgDn
- *   Moving BT access to the base layer is what frees SYMBOL pos 7, and moving
- *   PgUp/PgDn onto the inner column is what frees NUMNAV pos 8/22 for $ and #.
+ *   Moving BT access to the base layer is what freed SYMBOL pos 7; with LOCK
+ *   now on pos 1 that slot is simply transparent, so the base layer's BT
+ *   (&mo 3) shows through and the bluetooth layer stays reachable from SYMBOL.
+ *   Moving PgUp/PgDn onto the inner column is what frees NUMNAV pos 8/22 for
+ *   $ and #.
  *
  *   The LEFT column is the media stack, and is the one place this keymap departs
  *   from v06_v2 -- the drawing puts ENC on pos 6 and `-` on pos 20 of every
@@ -81,21 +84,33 @@
             mods = <(MOD_LGUI|MOD_RGUI)>;
             keep-mods = <(MOD_LGUI|MOD_RGUI)>;
         };
-    };
 
-    macros {
-        // The one glyph with no Option chord on the U.S. layout, so this key
-        // alone still needs "Unicode Hex Input" as the ACTIVE input source: hold
-        // Option, type the 4 hex digits, release. On the U.S. layout it types
-        // nothing. Every other glyph on SYMBOL is a plain Option chord, which is
-        // what keeps Option free for word navigation.
-        uni_rarr: uni_rarr {              // -> = U+2192
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            bindings = <&macro_press &kp LALT>, <&macro_tap &kp N2 &kp N1 &kp N9 &kp N2>, <&macro_release &kp LALT>;
-            label = "URARR";
+        // NUMNAV pos 28: tap = 0, hold = Shift. Not &mt, whose hold-preferred
+        // flavor turns the key into Shift the moment any other key goes down --
+        // on a number layer that makes "0" after a fast digit almost unreachable.
+        //
+        // "balanced" only commits to the hold if the other key is pressed AND
+        // RELEASED while this one is still down. A roll (press 0, press 5,
+        // release 0) therefore types 05, while a real Shift chord -- hold, tap
+        // the arrow, release -- still resolves to Shift, so Shift+arrow
+        // selection is unaffected.
+        //
+        // require-prior-idle-ms is the second guard: if any key was pressed
+        // within 150ms before this one, it resolves to the tap immediately and
+        // never waits. Mid-typing it is always 0; Shift needs the small pause
+        // you take anyway before reaching for a chord. Same 150ms the bracket
+        // combos use.
+        ht_shift_0: ht_shift_0 {            // tap 0, hold Shift
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            bindings = <&kp>, <&kp>;
+            flavor = "balanced";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
         };
     };
+
 
     combos {
         compatible = "zmk,combos";
@@ -181,7 +196,7 @@
         };  // T+G -> +-
 
         // The BSPC+SPACE lock combo from corne_v2 is deliberately gone -- LOCK is
-        // a key now, on SYMBOL pos 7.
+        // a key now, on SYMBOL pos 1.
     };
 
     keymap {
@@ -207,27 +222,34 @@
         };
 
         // ------------------------------------------------------------------------------------------
-        // | ESC | -> | ß | € | / | + | VOL+ | LOCK | $ | \/| | ^ | ° | DEL | BSPC |
+        // | ESC | LOCK | ß | € | / | + | VOL+ | ▽ | $ | \/| | ^ | ° | DEL | BSPC |
         // | TAB | | | _ | ∆ | * | - | VOL- | FN   | # | ! | @ | & | ;/: | RET  |
         // | SHFT| § | < | > | = | % |             | ~ | ` | ,/< | ./> |  ?  | '/" |
         //                 | CTRL | ALT | CMD |   | SPACE | ▽ | ▽ |
-        // -> is the one Unicode Hex Input macro; every other glyph is an Option
-        // chord (€ opt+shift+2, ° opt+shift+8, ß opt+s, § opt+6, ∆ opt+j -- which
-        // is U+2206 INCREMENT, not U+0394). `?` here is plain ?, not the
-        // /-with-shift key the base layer has. +- is no longer a key at all; it
-        // is the T+G (= + and -) combo.
+        // EVERY glyph on this layer is now a native Option chord on the U.S.
+        // layout (€ opt+shift+2, ° opt+shift+8, ß opt+s, § opt+6, ∆ opt+j -- which
+        // is U+2206 INCREMENT, not U+0394). The -> macro that used to sit on pos 1
+        // is gone: it typed U+2192 by holding Option and sending hex digits, which
+        // only worked while macOS's "Unicode Hex Input" was the ACTIVE input
+        // source -- and that input source takes over the whole Option layer, so it
+        // broke every chord on this layer AND Option word-navigation. Dropping it
+        // means this keymap no longer depends on the host input source at all.
+        // `?` here is plain ?, not the /-with-shift key the base layer has. +- is
+        // no longer a key at all; it is the T+G (= + and -) combo.
         //
-        // LOCK (pos 7) is Ctrl+Cmd+Q. Not C_SLEEP: that is Consumer usage 0x32,
+        // LOCK (pos 1) is Ctrl+Cmd+Q. Not C_SLEEP: that is Consumer usage 0x32,
         // which ZMK's own code table marks untested on macOS and which macOS does
         // not act on. C_POWER does work but ignores anything short of a
         // deliberate press, so a plain modifier chord is the better key.
+        //
+        // Pos 7 is &trans so the base layer's BT (&mo 3) shows through.
         symbol_layer {
             display-name = "SYMBOL";
             bindings = <
-&mm_esc_grave &uni_rarr  &kp LA(S) &kp LS(LA(N2)) &kp FSLH  &kp PLUS  &kp C_VOL_UP &kp LC(LG(Q)) &kp DLLR  &kp BSLH  &kp CARET &kp LS(LA(N8)) &kp DEL        &kp BSPC
-&kp TAB       &kp PIPE   &kp UNDER &kp LA(J)      &kp ASTRK &kp MINUS &kp C_VOL_DN &kp GLOBE     &kp HASH  &kp EXCL  &kp AT    &kp AMPS       &mm_colon_semi &kp RET
-&kp LSHFT     &kp LA(N6) &kp LT    &kp GT         &kp EQUAL &kp PRCNT                            &kp TILDE &kp GRAVE &kp COMMA &kp DOT        &kp QMARK      &kp SQT
-                                   &kp LCTRL      &kp LALT  &kp LGUI                             &kp SPACE &trans    &trans
+&mm_esc_grave &kp LC(LG(Q)) &kp LA(S) &kp LS(LA(N2)) &kp FSLH  &kp PLUS  &kp C_VOL_UP &trans    &kp DLLR  &kp BSLH  &kp CARET &kp LS(LA(N8)) &kp DEL        &kp BSPC
+&kp TAB       &kp PIPE      &kp UNDER &kp LA(J)      &kp ASTRK &kp MINUS &kp C_VOL_DN &kp GLOBE &kp HASH  &kp EXCL  &kp AT    &kp AMPS       &mm_colon_semi &kp RET
+&kp LSHFT     &kp LA(N6)    &kp LT    &kp GT         &kp EQUAL &kp PRCNT                        &kp TILDE &kp GRAVE &kp COMMA &kp DOT        &kp QMARK      &kp SQT
+                                      &kp LCTRL      &kp LALT  &kp LGUI                         &kp SPACE &trans    &trans
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
@@ -238,16 +260,17 @@
         // | TAB | 4 | 5 | 6 | * | - | PREV | PGDN | # |  ←   | ↓ |  →  | ;/: | RET  |
         // | 0/SHFT | 1 | 2 | 3 | = | % |          | ~ | ` | ,/< | ./> |  ?  | '/" |
         //                 | CTRL | ALT | CMD |   | SPACE | ▽ | ▽ |
-        // Pos 28 is tap-0 / hold-Shift, on this layer only -- it is a plain Shift
+        // Pos 28 is tap-0 / hold-Shift (&ht_shift_0, balanced + 150ms idle guard
+        // -- see the behavior for why), on this layer only; it is a plain Shift
         // everywhere else. PgUp/PgDn sit on the inner column, which is what lets
         // $ and # take 8 and 22.
         numnav_layer {
             display-name = "NUMNAV";
             bindings = <
-&mm_esc_grave &kp N7 &kp N8 &kp N9    &kp FSLH  &kp PLUS  &kp C_NEXT &kp PG_UP &kp DLLR  &kp HOME  &kp UP    &kp END   &kp DEL        &kp BSPC
-&kp TAB       &kp N4 &kp N5 &kp N6    &kp ASTRK &kp MINUS &kp C_PREV &kp PG_DN &kp HASH  &kp LEFT  &kp DOWN  &kp RIGHT &mm_colon_semi &kp RET
-&mt LSHFT N0  &kp N1 &kp N2 &kp N3    &kp EQUAL &kp PRCNT                      &kp TILDE &kp GRAVE &kp COMMA &kp DOT   &kp QMARK      &kp SQT
-                            &kp LCTRL &kp LALT  &kp LGUI                       &kp SPACE &trans    &trans
+&mm_esc_grave        &kp N7 &kp N8 &kp N9    &kp FSLH  &kp PLUS  &kp C_NEXT &kp PG_UP &kp DLLR  &kp HOME  &kp UP    &kp END   &kp DEL        &kp BSPC
+&kp TAB              &kp N4 &kp N5 &kp N6    &kp ASTRK &kp MINUS &kp C_PREV &kp PG_DN &kp HASH  &kp LEFT  &kp DOWN  &kp RIGHT &mm_colon_semi &kp RET
+&ht_shift_0 LSHFT N0 &kp N1 &kp N2 &kp N3    &kp EQUAL &kp PRCNT                      &kp TILDE &kp GRAVE &kp COMMA &kp DOT   &kp QMARK      &kp SQT
+                                   &kp LCTRL &kp LALT  &kp LGUI                       &kp SPACE &trans    &trans
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
