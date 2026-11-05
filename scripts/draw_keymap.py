@@ -166,7 +166,7 @@ KEY_LABEL = {
     # (This is how SYMBOL types € ° ± ß § ∆ without Unicode Hex Input, which
     # would otherwise swallow Option and break opt+arrow word navigation.)
     "LS(LA(N2))": "€", "LS(LA(N8))": "°", "LS(LA(EQUAL))": "±",
-    "LA(S)": "ß", "LA(N6)": "§", "LA(J)": "∆",
+    "LA(S)": "ß", "LA(N6)": "§", "LA(J)": "∆", "LA(C)": "ç", "LA(U)": "¨",
     "LC(LG(Q))": "Lock",
 }
 
@@ -196,6 +196,7 @@ NAMED = {
     "bt_clr": ("BT clr", "all"),
     "td_to_game": ("⇥⇥", "game"),
     "magic_shift_tap": ("Shift", "caps"),
+    "uml_e": ("ë", ""),
 }
 
 
@@ -362,7 +363,12 @@ def svg_for(layout, bindings, sensor_pos, unbound, combos=(), layer_idx=0,
         (x1, y1), (x2, y2) = cs
         mx, my = (x1 + x2) / 2, (y1 + y2) / 2
         glyph = bind.replace("&kp ", "").strip()
-        glyph = label(glyph)   # KEY_LABEL already knows every glyph a combo emits
+        if glyph.startswith("&"):
+            # a bare behavior reference (a macro, e.g. &uml_e) rather than a keycode
+            nm = glyph.lstrip("&")
+            glyph = NAMED[nm][0] if nm in NAMED else nm.replace("_", " ")
+        else:
+            glyph = label(glyph)   # KEY_LABEL knows every keycode a combo emits
         out.append('<g class="combo">')
         out.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f"/>' % (x1, y1, x2, y2))
         if len(glyph) > 1:

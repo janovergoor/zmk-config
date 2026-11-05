@@ -111,6 +111,26 @@
         };
     };
 
+    macros {
+        // ë has no single Option chord, but it does NOT need Unicode Hex Input:
+        // the U.S. layout has a DEAD KEY for the diaeresis at opt+u, which emits
+        // nothing on its own and combines with the next vowel. So opt+u then e
+        // gives ë on the plain U.S. layout. This is a normal two-keystroke macro,
+        // not the hex-input macro that used to live here -- do not delete it on
+        // the assumption that it is.
+        //
+        // Held Shift passes through the combo into the macro, so Shift gives Ë.
+        // The 30ms spacing is to let the host settle the dead-key state between
+        // the two taps; raise it if ë ever comes out as a bare "e".
+        uml_e: uml_e {                      // opt+u (diaeresis dead key) then e
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_tap &kp LA(U) &kp E>;
+            wait-ms = <30>;
+            tap-ms = <30>;
+            label = "UML_E";
+        };
+    };
 
     combos {
         compatible = "zmk,combos";
@@ -194,6 +214,61 @@
             bindings = <&kp LS(LA(EQUAL))>;
             layers = <0 1 2>;
         };  // T+G -> +-
+
+        /*
+         * ACCENTS -- one column left of the brackets, on the ring+middle pair,
+         * and each combo contains its own base letter:
+         *
+         *     W+E  ë        S+D  ß        X+C  ç
+         *
+         * layers = <0> ONLY. These positions are 8/9, 5/6 and 2/3 on NUMNAV and
+         * ß/€, _/∆ and </> on SYMBOL, where an accent would be nonsense.
+         *
+         * ç and ß are plain Option chords (opt+c, opt+s), so Shift gives Ç and
+         * the opt+shift form respectively. ë goes through the &uml_e dead-key
+         * macro. ß stays on its own SYMBOL key (pos 2) as well -- this is an
+         * addition, not a move.
+         *
+         * Same 150ms idle guard as the brackets, and it matters most here: "we"
+         * is a common bigram (in Dutch too) and "xc" shows up in except/exceed.
+         * The guard blocks them mid-word. "xc" and "sd" never START a word, so
+         * for those the guard is total cover -- after a pause the next keys are
+         * word-initial, and no word begins "xc".
+         *
+         * "we" does, which is the one gap: a word-initial "we" typed fast after
+         * a genuine pause (starting a sentence with "We") passes the idle guard,
+         * because pause-then-roll is exactly the gesture a combo detects. So
+         * combo_ediaer alone runs a tighter 30ms window: a deliberate chord on
+         * the ring+middle pair (the least independent fingers, so the easiest to
+         * press together) lands well inside 30ms, while a rolled "we" usually
+         * does not. This narrows the overlap rather than removing it -- the two
+         * gestures are not perfectly separable in time. If ë starts missing,
+         * raise it to 35-40; if "We" still misfires, drop to 25.
+         *
+         * Note a tighter window costs nothing in latency: ZMK abandons the combo
+         * sooner, so W and E are actually emitted marginally faster.
+         */
+        combo_ediaer {
+            timeout-ms = <30>;      // tighter than the rest -- see above
+            require-prior-idle-ms = <150>;
+            key-positions = <2 3>;
+            bindings = <&uml_e>;
+            layers = <0>;
+        };  // W+E -> ë
+        combo_szlig {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <16 17>;
+            bindings = <&kp LA(S)>;
+            layers = <0>;
+        };  // S+D -> ß
+        combo_ccedil {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <30 31>;
+            bindings = <&kp LA(C)>;
+            layers = <0>;
+        };  // X+C -> ç
 
         // The BSPC+SPACE lock combo from corne_v2 is deliberately gone -- LOCK is
         // a key now, on SYMBOL pos 1.
