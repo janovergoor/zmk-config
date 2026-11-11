@@ -12,10 +12,11 @@
  *     NNAV stays on pos 44. That frees the old SYM slot (pos 39) for a real key.
  *   - The bottom-right two keys become the standard US pairs: pos 38 `/` (shift
  *     `?`) and pos 39 `'` (shift `"`).
- *   - SYMBOL is substantially re-laid-out: LOCK takes pos 1, `\` moves to
+ *   - SYMBOL is substantially re-laid-out: an em dash takes pos 1, `\` moves to
  *     pos 9, DEL appears on pos 12, and @ ! & # $ move to the home row.
  *   - NUMNAV's left Shift becomes tap-0 / hold-Shift, and = % ~ ` fill the row.
- *   - The BSPC+SPACE lock combo is gone; LOCK is now a key (SYMBOL pos 1).
+ *   - The BSPC+SPACE lock combo is gone; LOCK is now a key (BT layer pos 1, and
+ *     the knob press on BT).
  *   - Bracket combos now run on NUMNAV too; [ ] are suppressed on SYMBOL.
  *
  * THE TWO INNER COLUMNS (positions 6/20 on the left, 7/21 on the right).
@@ -24,35 +25,42 @@
  *       base    pos 7 BT (&mo 3)        pos 21 FN (Globe)
  *       SYMBOL  pos 7 transparent      pos 21 FN (Globe)
  *       NUMNAV  pos 7 PgUp             pos 21 PgDn
- *   Moving BT access to the base layer is what freed SYMBOL pos 7; with LOCK
- *   now on pos 1 that slot is simply transparent, so the base layer's BT
- *   (&mo 3) shows through and the bluetooth layer stays reachable from SYMBOL.
+ *   Moving BT access to the base layer is what freed SYMBOL pos 7; that slot is
+ *   simply transparent, so the base layer's BT (&mo 3) shows through and the
+ *   bluetooth layer stays reachable from SYMBOL.
  *   Moving PgUp/PgDn onto the inner column is what frees NUMNAV pos 8/22 for
  *   $ and #.
  *
  *   The LEFT column is the media stack, and is the one place this keymap departs
  *   from v06_v2 -- the drawing puts ENC on pos 6 and `-` on pos 20 of every
- *   layer:
- *       base    pos 6 Mute             pos 20 Play/Pause
- *       SYMBOL  pos 6 Vol+             pos 20 Vol-
- *       NUMNAV  pos 6 Next             pos 20 Prev
+ *   layer. Pos 6 IS the knob (see below), so its row is the knob's press:
+ *       base    pos 6 Mute             pos 20 (empty)
+ *       SYMBOL  pos 6 Play/Pause       pos 20 (empty)
+ *       NUMNAV  pos 6 Play/Pause       pos 20 (empty)
+ *       BT      pos 6 Lock             pos 20 (empty)
+ *   Pos 20, the key under the knob, is deliberately empty on every layer for
+ *   now (&trans all the way down, which on base means nothing at all).
  *   Note this leaves the base layer with no `-` key (v06_v2 wants one on pos 20);
  *   `-` lives on SYMBOL pos 19.
  *
- * ROTARY ENCODER (left half, in the pos-6 footprint).
+ * ROTARY ENCODER: one knob, left_ex1, in the pos-6 footprint of the left half.
  *
- *   Press: the knob's push switch takes pos 6's place in the matrix, so pressing
- *   it is whatever pos 6 is on the active layer -- Mute on base.
+ *                 press          turn right   turn left
+ *       base      Mute           Vol+         Vol-
+ *       SYMBOL    Play/Pause     Next         Prev
+ *       NUMNAV    Play/Pause     PgUp         PgDn
+ *       BT        Lock           Bri+         Bri-
  *
- *   Turn: sensor-bindings, matched BY INDEX against the sensors list in
- *   corne_v1.dtsi: 0 = left_ex1, 1 = left_ex2, 2 = right_ex1, 3 = right_ex2.
- *   The left PCB has two encoder footprints (EX1 and EX2, sharing a pin) and
- *   nothing upstream says which one is the pos-6 one, so slots 0 AND 1 are both
- *   volume: the knob turns volume whichever footprint it is. When the PCB is in
- *   hand the silkscreen settles it, and the other slot can be rebound freely.
- *   The right-half slots are kept but have no knob.
+ *   Press: the knob's push switch takes pos 6's place in the matrix, so the press
+ *   is pos 6's binding on the active layer.
  *
- *   If it turns the wrong way, swap the two keycodes in slots 0 and 1.
+ *   Turn: each layer's sensor-bindings has ONE entry, because corne_v3_left.dts
+ *   and corne_v3_right.dts cut the sensor list down to <&left_ex1_encoder>.
+ *   `&inc_dec_kp A B` sends A on a right turn and B on a left turn. (ZMK calls
+ *   A "clockwise"; the v3 board file swaps the knob's A/B pins so that ZMK's
+ *   clockwise is a right turn -- an inference from Keebart's stock keymap, not
+ *   yet tested on the knob. If it runs backwards, fix it there, once, rather
+ *   than swapping every pair here.)
  *
  *   The knob is on the PERIPHERAL half (the right half is central on this board).
  *   ZMK v0.3 forwards peripheral encoder events over the split link, so that
@@ -285,7 +293,7 @@
         };  // X+C -> ç
 
         // The BSPC+SPACE lock combo from corne_v2 is deliberately gone -- LOCK is
-        // a key now, on SYMBOL pos 1.
+        // a key now, on the BT layer (pos 1 and the knob press).
     };
 
     keymap {
@@ -293,7 +301,7 @@
 
         // ------------------------------------------------------------------------------------------
         // | ESC | Q | W | E | R | T | MUTE | BT   | Y | U | I | O |  P  | BSPC |
-        // | TAB | A | S | D | F | G | PLAY | FN   | H | J | K | L | ;/: | RET  |
+        // | TAB | A | S | D | F | G |  --  | FN   | H | J | K | L | ;/: | RET  |
         // | SHFT| Z | X | C | V | B |             | N | M | ,/< | ./> | //? | '/" |
         //                 | CTRL | ALT | CMD |   | SPACE | NNAV | SYM |
         // SYM is now the outer right thumb (pos 45); NNAV stays on 44.
@@ -302,22 +310,23 @@
             display-name = "QWERTY";
             bindings = <
 &mm_esc_grave &kp Q &kp W &kp E     &kp R    &kp T    &kp C_MUTE &mo 3     &kp Y     &kp U &kp I     &kp O   &kp P          &kp BSPC
-&kp TAB       &kp A &kp S &kp D     &kp F    &kp G    &kp C_PP   &kp GLOBE &kp H     &kp J &kp K     &kp L   &mm_colon_semi &kp RET
+&kp TAB       &kp A &kp S &kp D     &kp F    &kp G    &trans     &kp GLOBE &kp H     &kp J &kp K     &kp L   &mm_colon_semi &kp RET
 &kp LSHFT     &kp Z &kp X &kp C     &kp V    &kp B                         &kp N     &kp M &kp COMMA &kp DOT &kp FSLH       &kp SQT
                           &kp LCTRL &kp LALT &kp LGUI                      &kp SPACE &mo 2 &mo 1
             >;
 
-            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
+            // knob (left_ex1): press = pos 6 Mute, turn right = Vol+, turn left = Vol-
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
 
         // ------------------------------------------------------------------------------------------
-        // | ESC | LOCK | ß | € | / | + | VOL+ | ▽ | $ | \/| | ^ | ° | DEL | BSPC |
-        // | TAB | | | _ | ∆ | * | - | VOL- | FN   | # | ! | @ | & | ;/: | RET  |
+        // | ESC |  —   | ß | € | / | + | PLAY | ▽ | $ | \/| | ^ | ° | DEL | BSPC |
+        // | TAB | | | _ | ∆ | * | - |  --  | FN   | # | ! | @ | & | ;/: | RET  |
         // | SHFT| § | < | > | = | % |             | ~ | ` | ,/< | ./> |  ?  | '/" |
         //                 | CTRL | ALT | CMD |   | SPACE | ▽ | ▽ |
         // EVERY glyph on this layer is now a native Option chord on the U.S.
-        // layout (€ opt+shift+2, ° opt+shift+8, ß opt+s, § opt+6, ∆ opt+j -- which
-        // is U+2206 INCREMENT, not U+0394). The -> macro that used to sit on pos 1
+        // layout (— opt+shift+minus, € opt+shift+2, ° opt+shift+8, ß opt+s,
+        // § opt+6, ∆ opt+j -- which is U+2206 INCREMENT, not U+0394). The -> macro that used to sit on pos 1
         // is gone: it typed U+2192 by holding Option and sending hex digits, which
         // only worked while macOS's "Unicode Hex Input" was the ACTIVE input
         // source -- and that input source takes over the whole Option layer, so it
@@ -326,27 +335,26 @@
         // `?` here is plain ?, not the /-with-shift key the base layer has. +- is
         // no longer a key at all; it is the T+G (= + and -) combo.
         //
-        // LOCK (pos 1) is Ctrl+Cmd+Q. Not C_SLEEP: that is Consumer usage 0x32,
-        // which ZMK's own code table marks untested on macOS and which macOS does
-        // not act on. C_POWER does work but ignores anything short of a
-        // deliberate press, so a plain modifier chord is the better key.
+        // Pos 1 is an EM DASH (opt+shift+minus; opt+minus would be the en dash).
+        // It used to be LOCK, which now lives on the BT layer only.
         //
         // Pos 7 is &trans so the base layer's BT (&mo 3) shows through.
         symbol_layer {
             display-name = "SYMBOL";
             bindings = <
-&mm_esc_grave &kp LC(LG(Q)) &kp LA(S) &kp LS(LA(N2)) &kp FSLH  &kp PLUS  &kp C_VOL_UP &trans    &kp DLLR  &kp BSLH  &kp CARET &kp LS(LA(N8)) &kp DEL        &kp BSPC
-&kp TAB       &kp PIPE      &kp UNDER &kp LA(J)      &kp ASTRK &kp MINUS &kp C_VOL_DN &kp GLOBE &kp HASH  &kp EXCL  &kp AT    &kp AMPS       &mm_colon_semi &kp RET
+&mm_esc_grave &kp LS(LA(MINUS)) &kp LA(S) &kp LS(LA(N2)) &kp FSLH  &kp PLUS  &kp C_PP     &trans    &kp DLLR  &kp BSLH  &kp CARET &kp LS(LA(N8)) &kp DEL        &kp BSPC
+&kp TAB       &kp PIPE      &kp UNDER &kp LA(J)      &kp ASTRK &kp MINUS &trans       &kp GLOBE &kp HASH  &kp EXCL  &kp AT    &kp AMPS       &mm_colon_semi &kp RET
 &kp LSHFT     &kp LA(N6)    &kp LT    &kp GT         &kp EQUAL &kp PRCNT                        &kp TILDE &kp GRAVE &kp COMMA &kp DOT        &kp QMARK      &kp SQT
                                       &kp LCTRL      &kp LALT  &kp LGUI                         &kp SPACE &trans    &trans
             >;
 
-            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
+            // knob (left_ex1): press = pos 6 Play/Pause, turn right = Next, turn left = Prev
+            sensor-bindings = <&inc_dec_kp C_NEXT C_PREV>;
         };
 
         // ------------------------------------------------------------------------------------------
-        // | ESC | 7 | 8 | 9 | / | + | NEXT | PGUP | $ | HOME | ↑ | END | DEL | BSPC |
-        // | TAB | 4 | 5 | 6 | * | - | PREV | PGDN | # |  ←   | ↓ |  →  | ;/: | RET  |
+        // | ESC | 7 | 8 | 9 | / | + | PLAY | PGUP | $ | HOME | ↑ | END | DEL | BSPC |
+        // | TAB | 4 | 5 | 6 | * | - |  --  | PGDN | # |  ←   | ↓ |  →  | ;/: | RET  |
         // | 0/SHFT | 1 | 2 | 3 | = | % |          | ~ | ` | ,/< | ./> |  ?  | '/" |
         //                 | CTRL | ALT | CMD |   | SPACE | ▽ | ▽ |
         // Pos 28 is tap-0 / hold-Shift (&ht_shift_0, balanced + 150ms idle guard
@@ -356,16 +364,23 @@
         numnav_layer {
             display-name = "NUMNAV";
             bindings = <
-&mm_esc_grave        &kp N7 &kp N8 &kp N9    &kp FSLH  &kp PLUS  &kp C_NEXT &kp PG_UP &kp DLLR  &kp HOME  &kp UP    &kp END   &kp DEL        &kp BSPC
-&kp TAB              &kp N4 &kp N5 &kp N6    &kp ASTRK &kp MINUS &kp C_PREV &kp PG_DN &kp HASH  &kp LEFT  &kp DOWN  &kp RIGHT &mm_colon_semi &kp RET
+&mm_esc_grave        &kp N7 &kp N8 &kp N9    &kp FSLH  &kp PLUS  &kp C_PP   &kp PG_UP &kp DLLR  &kp HOME  &kp UP    &kp END   &kp DEL        &kp BSPC
+&kp TAB              &kp N4 &kp N5 &kp N6    &kp ASTRK &kp MINUS &trans     &kp PG_DN &kp HASH  &kp LEFT  &kp DOWN  &kp RIGHT &mm_colon_semi &kp RET
 &ht_shift_0 LSHFT N0 &kp N1 &kp N2 &kp N3    &kp EQUAL &kp PRCNT                      &kp TILDE &kp GRAVE &kp COMMA &kp DOT   &kp QMARK      &kp SQT
                                    &kp LCTRL &kp LALT  &kp LGUI                       &kp SPACE &trans    &trans
             >;
 
-            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
+            // knob (left_ex1): press = pos 6 Play/Pause, turn right = PgUp, turn left = PgDn
+            sensor-bindings = <&inc_dec_kp PG_UP PG_DN>;
         };
 
         // Reached with &mo 3 from base pos 7.
+        //
+        // LOCK is on pos 1 (the Q key) and on the knob press (pos 6): Ctrl+Cmd+Q.
+        // Plain Cmd+Q would QUIT the front app. Not C_SLEEP either: that is
+        // Consumer usage 0x32, which ZMK's own code table marks untested on macOS
+        // and which macOS does not act on. C_POWER does work but ignores anything
+        // short of a deliberate press, so a plain modifier chord is the better key.
         //
         // Pos 16 (the S key) is STUDIO UNLOCK: hold BT, tap S. ZMK Studio starts
         // locked and will not edit the keymap until this is pressed. Studio runs
@@ -375,11 +390,14 @@
         bluetooth {
             display-name = "BT";
             bindings = <
-&trans &trans &trans          &trans &trans &trans &trans &trans &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_CLR
-&trans &trans &studio_unlock &trans &trans &trans &trans &trans &bt BT_DISC 0 &bt BT_DISC 1 &bt BT_DISC 2 &bt BT_DISC 3 &bt BT_DISC 4 &bt BT_CLR_ALL
+&trans &kp LC(LG(Q)) &trans         &trans &trans &trans &kp LC(LG(Q)) &trans &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_CLR
+&trans &trans        &studio_unlock &trans &trans &trans &trans        &trans &bt BT_DISC 0 &bt BT_DISC 1 &bt BT_DISC 2 &bt BT_DISC 3 &bt BT_DISC 4 &bt BT_CLR_ALL
 &trans &trans &trans &trans &trans &trans               &trans        &trans        &trans        &trans        &trans        &trans
                      &trans &trans &trans               &trans        &trans        &trans
             >;
+
+            // knob (left_ex1): press = pos 6 Lock, turn right = Bri+, turn left = Bri-
+            sensor-bindings = <&inc_dec_kp C_BRI_UP C_BRI_DN>;
         };
     };
 };

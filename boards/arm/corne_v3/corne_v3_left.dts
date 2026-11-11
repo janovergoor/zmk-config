@@ -9,7 +9,8 @@
  * the matrix transform all stay defined in exactly one place. Only the board
  * identity differs, which is what gives ZMK a separate <board>.keymap to load.
  *
- * If the hardware ever changes, change it in corne_v1/ and this follows.
+ * If the hardware ever changes, change it in corne_v1/ and this follows --
+ * EXCEPT the encoders, which v3 sets up for itself below (one knob, left_ex1).
  */
 
 #include "../corne_v1/corne_v1_left.dts"
@@ -17,4 +18,40 @@
 / {
     model = "corne_v3_left";
     compatible = "corne_v3_left";
+};
+
+/*
+ * ENCODER. v3 is the one board that differs from corne_v1 here: it has exactly
+ * one knob, left_ex1, in the pos-6 footprint. The other three footprints are
+ * switched off (their drivers would otherwise sit on GPIO interrupts -- and
+ * left_ex2 shares its B pin, P0.09, with left_ex1).
+ *
+ * The sensor list is cut down to that one knob, so sensor index 0 = left_ex1
+ * and each layer in corne_v3.keymap carries a single sensor binding. The SAME
+ * override is in corne_v3_right.dts: the index is what the left half sends over
+ * the split link, so both halves must agree on the list.
+ *
+ * If the knob turns out to be in the EX2 footprint instead, swap left_ex1 for
+ * left_ex2 in both files (and here, enable ex2 / disable ex1).
+ *
+ * DIRECTION. A and B are swapped relative to corne_v1.dtsi (P0.09 / P0.10
+ * instead of P0.10 / P0.09) so that what ZMK calls clockwise -- the FIRST
+ * argument of &inc_dec_kp -- is a RIGHT turn. Inferred, not yet tested on the
+ * knob: Keebart's stock keymap for this PCB puts Vol-/Vol+, PgUp/PgDn and
+ * Prev/Next in the order that only makes sense if, with their pin order, a
+ * right turn is ZMK's counter-clockwise (right = Vol+, PgDn, Next). If the knob
+ * runs backwards, delete the two gpios lines below.
+ */
+&left_ex1_encoder {
+    a-gpios = <&gpio0  9 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    b-gpios = <&gpio0 10 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+    status = "okay";
+};
+
+&left_ex2_encoder {
+    status = "disabled";
+};
+
+&sensors {
+    sensors = <&left_ex1_encoder>;
 };

@@ -9,7 +9,8 @@
  * the matrix transform all stay defined in exactly one place. Only the board
  * identity differs, which is what gives ZMK a separate <board>.keymap to load.
  *
- * If the hardware ever changes, change it in corne_v1/ and this follows.
+ * If the hardware ever changes, change it in corne_v1/ and this follows --
+ * EXCEPT the encoders, which v3 sets up for itself below (one knob, left_ex1).
  */
 
 #include "../corne_v1/corne_v1_right.dts"
@@ -17,4 +18,22 @@
 / {
     model = "corne_v3_right";
     compatible = "corne_v3_right";
+};
+
+/*
+ * No knob on this half (see corne_v3_left.dts). The sensor list must match the
+ * left half's exactly: this is the central, and it looks the left knob's events
+ * up by index in this list. left_ex1 stays "disabled" here -- it is the left
+ * half's device; this half only needs the slot.
+ */
+&right_ex1_encoder {
+    status = "disabled";
+};
+
+&right_ex2_encoder {
+    status = "disabled";
+};
+
+&sensors {
+    sensors = <&left_ex1_encoder>;
 };

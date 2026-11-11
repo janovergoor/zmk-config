@@ -55,6 +55,32 @@ def read_layers(path):
     return layers
 
 
+def read_sensor_bindings(path):
+    """
+    -> {layer_name: [binding, ...]} for every layer that has sensor-bindings.
+
+    Index N is sensor N, i.e. the Nth phandle in the board's `sensors` list (the
+    same order the layout JSON's "sensors" array uses). A layer that is absent
+    from the result has no sensor-bindings at all, and ZMK falls through it.
+    """
+    src = open(path, encoding="utf-8").read()
+    src = src[src.index("keymap {"):]
+    out = {}
+    for m in re.finditer(r"(\w+)\s*\{\s*(?:display-name = \"([^\"]*)\";\s*)?bindings = <", src):
+        # A layer node holds no nested braces, so the first `};` after its
+        # bindings closes it -- and sensor-bindings, if any, is inside.
+        node = src[m.start():src.index("};", m.end())]
+        node = re.sub(r"//[^\n]*|/\*.*?\*/", "", node, flags=re.S)
+        sm = re.search(r"sensor-bindings\s*=\s*(.*?);", node, re.S)
+        if not sm:
+            continue
+        # accepts both <&a X Y &b X Y> and <&a X Y>, <&b X Y>
+        body = re.sub(r"[<>,]", " ", sm.group(1))
+        out[m.group(1)] = [re.sub(r"\s+", " ", ("&" + p).strip())
+                           for p in body.split("&") if p.strip()]
+    return out
+
+
 def read_layout(path):
     d = json.load(open(path, encoding="utf-8"))
     layouts = d["layouts"]
@@ -148,6 +174,7 @@ KEY_LABEL = {
     "LALT": "Alt", "RALT": "Alt", "LMETA": "Cmd", "RMETA": "Cmd",
     "C_MUTE": "Mute", "C_VOL_UP": "Vol+", "C_VOL_DN": "Vol-",
     "C_NEXT": "Next", "C_PREV": "Prev",
+    "C_VOLUME_UP": "Vol+", "C_VOLUME_DOWN": "Vol-",
     "C_BRI_UP": "Bri+", "C_BRI_DN": "Bri-",
     "C_PP": "Play", "C_PLAY_PAUSE": "Play", "C_SLEEP": "Sleep",
     "RET": "Enter", "LGUI": "Cmd", "RGUI": "Cmd", "GLOBE": "Globe",
@@ -167,6 +194,7 @@ KEY_LABEL = {
     # would otherwise swallow Option and break opt+arrow word navigation.)
     "LS(LA(N2))": "€", "LS(LA(N8))": "°", "LS(LA(EQUAL))": "±",
     "LA(S)": "ß", "LA(N6)": "§", "LA(J)": "∆", "LA(C)": "ç", "LA(U)": "¨",
+    "LS(LA(MINUS))": "—", "LA(MINUS)": "–",
     "LC(LG(Q))": "Lock",
 }
 
@@ -251,8 +279,13 @@ def pretty(binding, beh_map=None):
     if beh == "&sl":
         return (args[0], "sticky", "layer", False)
     if beh == "&bt":
-        return (" ".join(args).replace("BT_SEL", "BT").replace("BT_CLR_ALL", "BT clr all")
-                .replace("BT_CLR", "BT clr"), "", "sys", False)
+        # A cap fits ~6 characters, so the action goes on the second line rather
+        # than being spelled out ("BT_DISC 0" used to run into the next key).
+        cmd, n = args[0], (args[1] if len(args) > 1 else "")
+        main = ("BT " + n).strip()
+        sub = {"BT_SEL": "", "BT_DISC": "disc", "BT_CLR": "clear",
+               "BT_CLR_ALL": "clr all", "BT_NXT": "next", "BT_PRV": "prev"}
+        return (main, sub.get(cmd, cmd.replace("BT_", "").lower()), "sys", False)
     if beh == "&caps_word":
         return ("Caps", "word", "sys", False)
     name = beh.lstrip("&")
@@ -260,6 +293,22 @@ def pretty(binding, beh_map=None):
         m, s = NAMED[name]
         return (m, s, "morph", True)
     return (name.replace("_", " "), "", "custom", False)
+
+
+def sensor_pretty(binding):
+    """
+    -> (ccw, cw) labels for one sensor binding.
+
+    `&inc_dec_kp A B` taps A on what ZMK calls clockwise (a positive count from
+    the encoder driver) and B on counter-clockwise -- the first argument is
+    cw_binding in behavior_sensor_rotate_common.c.
+    """
+    toks = binding.split()
+    beh, args = toks[0], toks[1:]
+    if beh in ("&inc_dec_kp", "&inc_dec_cp") and len(args) == 2:
+        return (label(args[1]), label(args[0]))
+    # anything else (a custom zmk,behavior-sensor-rotate) is shown by name
+    return (None, " ".join([beh.lstrip("&").replace("_", " ")] + args))
 
 
 # --------------------------------------------------------------------------
@@ -477,27 +526,130 @@ svg.board{display:block; width:100%; min-width:760px; height:auto}
 .combo text{text-anchor:middle; fill:var(--panel); font:600 14px "IBM Plex Mono",ui-monospace,monospace}
 .k-enc rect{stroke:var(--enc); stroke-width:1.8; stroke-dasharray:5 3}
 
+.encs{display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; margin:0 0 14px}
+.enc-h{font:600 .7rem/1 "IBM Plex Mono",ui-monospace,monospace; color:var(--ink-3);
+       text-transform:uppercase; letter-spacing:.07em; margin-right:2px}
+.enc{display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 11px;
+     border:1px solid var(--enc); background:var(--enc-soft); border-radius:999px}
+.enc-n{font-size:.78rem; color:var(--ink-2); white-space:nowrap}
+.enc-b{font:500 .86rem/1.2 "IBM Plex Mono",ui-monospace,monospace; color:var(--ink); white-space:nowrap}
+.enc-b i{font-style:normal; color:var(--enc); margin-right:4px}
+.enc-inherit{background:var(--trans-cap); border-color:var(--rule)}
+.enc-inherit .enc-b{color:var(--ink-3)}
+.enc-inherit .enc-b i{color:var(--ink-3)}
+.enc-off{background:transparent; border-color:var(--rule); border-style:dashed}
+.enc-off .enc-b{color:var(--ink-3)}
+.enc-b i.enc-p{font:600 .66rem/1 "IBM Plex Sans Condensed",system-ui,sans-serif;
+               text-transform:uppercase; letter-spacing:.06em; margin-right:5px}
+.enc-b.enc-dim{color:var(--ink-3)}
+
 footer{color:var(--ink-2); font-size:.85rem; border-top:1px solid var(--rule); padding-top:16px}
 code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.86em;
      background:var(--trans-cap); padding:1px 5px; border-radius:4px}
 """
 
 
-def build_html(layers, layout, sensors, unbound, title, combos=(), beh_map=None):
+def sensor_names(sensors, layout, n):
+    """
+    -> [(display name, key position or None)] for sensor slots 0..n-1, from the
+    layout JSON. The position is only known when the entry carries row/col.
+    """
+    names = []
+    for i in range(n):
+        s = sensors[i] if i < len(sensors) else {}
+        nm = s.get("name") or s.get("label") or "sensor %d" % i
+        nm = re.sub(r"^encoder_", "", nm.lower()).replace("_", " ")
+        pos = None
+        if "row" in s and "col" in s:
+            for p, k in enumerate(layout):
+                if (k.get("row"), k.get("col")) == (s["row"], s["col"]):
+                    pos = p
+                    break
+        names.append((nm, pos))
+    return names
+
+
+def encoder_row(layer_idx, layers, sensor_binds, names, beh_map=None):
+    """
+    One chip per sensor: what pressing and turning it does on this layer.
+
+    A layer with no sensor-bindings (or &trans in a slot) falls through to the
+    next ACTIVE layer that has one. As with keys, that is always base here,
+    since the other layers are exclusive momentary holds -- so resolve against
+    base and dim the result.
+
+    The press is not a sensor binding at all: the knob's switch sits on the
+    key position the JSON gives it, so it is that key's binding on this layer.
+    """
+    own = sensor_binds.get(layers[layer_idx][0])
+    base = sensor_binds.get(layers[0][0])
+    chips = []
+    for i, (nm, pos) in enumerate(names):
+        press = ""
+        if pos is not None:
+            kb = layers[layer_idx][2][pos]
+            dim = ""
+            if kb == "&trans" and layer_idx > 0:
+                kb, dim = layers[0][2][pos], " enc-dim"
+            # transparent all the way down (or &none) means the press does nothing
+            what = "&mdash;" if kb in ("&trans", "&none") else esc(pretty(kb, beh_map)[0])
+            press = ('<span class="enc-b%s"><i class="enc-p">press</i>%s</span>'
+                     % (dim, what))
+            nm = "%s · pos %d" % (nm, pos)
+        b = own[i] if own and i < len(own) else None
+        inherited = False
+        if (b is None or b == "&trans") and layer_idx > 0:
+            b = base[i] if base and i < len(base) else None
+            inherited = True
+        if b is None or b in ("&trans", "&none"):
+            chips.append('<div class="enc enc-off"><span class="enc-n">%s</span>%s'
+                         '<span class="enc-b">&mdash;</span></div>' % (esc(nm), press))
+            continue
+        ccw, cw = sensor_pretty(b)
+        if ccw is None:
+            turns = '<span class="enc-b">%s</span>' % esc(cw)
+        else:
+            turns = ('<span class="enc-b"><i>&#8634;</i>%s</span>'
+                     '<span class="enc-b"><i>&#8635;</i>%s</span>' % (esc(ccw), esc(cw)))
+        chips.append('<div class="enc%s"><span class="enc-n">%s</span>%s%s</div>'
+                     % (" enc-inherit" if inherited else "", esc(nm), press, turns))
+    head = "encoders" + (" &middot; from base" if own is None and layer_idx > 0 else "")
+    return '<div class="encs"><span class="enc-h">%s</span>%s</div>' % (head, "".join(chips))
+
+
+def build_html(layers, layout, sensors, unbound, title, combos=(), beh_map=None,
+               sensor_binds=None):
     # Only sensors that name a key position can be drawn. Keymap-editor style
     # entries (ref/name/compatible, as in corne_v3.json) carry none.
     sensor_pos = set((s["row"], s["col"]) for s in sensors if "row" in s and "col" in s)
+    sensor_binds = sensor_binds or {}
+    n_sensors = 0
+    if sensor_binds:
+        n_sensors = max([len(sensors)] + [len(v) for v in sensor_binds.values()])
+    names = sensor_names(sensors, layout, n_sensors)
+
     parts = []
     stack = [b for _n, _d, b in layers]
     for name, disp, bindings in layers:
         idx = len(parts)
         parts.append(
             '<section><div class="lname"><h2>%s</h2><span class="idx">layer %d &middot; %s</span></div>'
-            '<div class="scroll">%s</div></section>'
+            '<div class="scroll">%s</div>%s</section>'
             % (esc(disp), idx, esc(name),
                svg_for(layout, bindings, sensor_pos, unbound, combos, idx,
-                       beh_map, stack))
+                       beh_map, stack),
+               encoder_row(idx, layers, sensor_binds, names, beh_map) if n_sensors else "")
         )
+
+    enc_meta = enc_legend = enc_foot = ""
+    if n_sensors:
+        enc_meta = "<span><b>%d</b> encoder%s</span>" % (n_sensors, "" if n_sensors == 1 else "s")
+        enc_legend = ('<span class="swatch"><i class="chip e"></i>'
+                      'encoder: press &middot; &#8634; left turn &middot; &#8635; right turn</span>')
+        enc_foot = (" Encoders: &#8635; is the first argument of <code>&amp;inc_dec_kp</code>,"
+                    " which ZMK calls clockwise; whether that is a right turn on the desk"
+                    " depends on the A/B pin order in the board file, so if a knob runs"
+                    " backwards, swap the pins there. The press is the key the knob sits on.")
 
     combo_txt = " &middot; ".join(
         "%s = %s" % ("+".join(str(p) for p in c[1]),
@@ -513,13 +665,13 @@ def build_html(layers, layout, sensors, unbound, title, combos=(), beh_map=None)
   <h1>%s</h1>
   <div class="meta">
     <span><b>%d</b> keys</span><span><b>%d</b> per half</span>
-    <span><b>%d</b> layers</span><span><b>%d</b> combos</span>
+    <span><b>%d</b> layers</span><span><b>%d</b> combos</span>%s
   </div>
   <div class="legend">
     <span class="swatch"><i class="chip"></i>bound</span>
     <span class="swatch"><i class="chip t"></i>&#9661; transparent</span>
     <span class="swatch"><i class="chip o"></i>unbound on every layer</span>
-    <span class="swatch"><i class="chip c"></i>part of a combo</span>
+    <span class="swatch"><i class="chip c"></i>part of a combo</span>%s
     <span>keycap order: Shift glyph above, tap glyph below</span>
     <span>small number = key position</span>
   </div>
@@ -529,10 +681,11 @@ def build_html(layers, layout, sensors, unbound, title, combos=(), beh_map=None)
   Geometry from the matching <code>config/*.json</code>; bindings and combos
   parsed from the <code>.keymap</code>. Key position <i>N</i> is the <i>N</i>th
   binding in every layer and what a combo's <code>key-positions</code> names.
-  Combos: %s. Regenerate with <code>python3 scripts/draw_keymap.py</code>.
+  Combos: %s.%s Regenerate with <code>python3 scripts/draw_keymap.py</code>.
 </footer>
 </div>""" % (esc(title), CSS, esc(title), len(layout), len(layout) // 2,
-             len(layers), len(combos), "".join(parts), combo_txt)
+             len(layers), len(combos), enc_meta, enc_legend, "".join(parts),
+             combo_txt, enc_foot)
 
 
 def main():
@@ -560,6 +713,7 @@ def main():
     combos = [(n, pos, b, list(range(len(layers))) if lyrs is None else lyrs)
               for n, pos, b, lyrs in combos]
     beh_map = read_behaviors(a.keymap)
+    sensor_binds = read_sensor_bindings(a.keymap)
 
     if not layers:
         sys.exit("no layers parsed from %s" % a.keymap)
@@ -574,9 +728,11 @@ def main():
         unbound &= set(i for i, x in enumerate(b) if x == "&trans")
 
     open(a.out, "w", encoding="utf-8").write(
-        build_html(layers, layout, sensors, unbound, a.title, combos, beh_map))
-    print("wrote %s  (%d layers, %d keys, %d combos, %d behaviours decoded)"
-          % (a.out, len(layers), len(layout), len(combos), len(beh_map)))
+        build_html(layers, layout, sensors, unbound, a.title, combos, beh_map,
+                   sensor_binds))
+    print("wrote %s  (%d layers, %d keys, %d combos, %d behaviours decoded, "
+          "sensor-bindings on %d layers)"
+          % (a.out, len(layers), len(layout), len(combos), len(beh_map), len(sensor_binds)))
     for n, v in sorted(beh_map.items()):
         print("    %-16s %s" % (n, "%r" % (v[1],) if v[0] == "glyph" else "%s / %s" % (v[1], v[2])))
     if unbound:
