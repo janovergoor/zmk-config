@@ -41,12 +41,12 @@ CONFIG_ZMK_RGB_UNDERGLOW=y
 CONFIG_ZMK_RGB_UNDERGLOW_BRT_MAX=20
 CONFIG_ZMK_RGB_UNDERGLOW_HUE_START=200
 CONFIG_ZMK_RGB_UNDERGLOW_SAT_START=98
+# Turn underglow off when this half goes idle (ZMK_IDLE_TIMEOUT, default 30s)
+# and back on at the next keypress. Each half tracks its own activity.
+CONFIG_ZMK_RGB_UNDERGLOW_AUTO_OFF_IDLE=y
 
 # Windows Battery Reporting Fix
 CONFIG_BT_GATT_ENFORCE_SUBSCRIPTION=n
-
-# Enable ZMK Studio (alpha)
-CONFIG_ZMK_STUDIO=y
 
 # Improved connection stability
 CONFIG_ZMK_BLE_EXPERIMENTAL_CONN=y

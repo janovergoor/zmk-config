@@ -197,6 +197,7 @@ NAMED = {
     "td_to_game": ("⇥⇥", "game"),
     "magic_shift_tap": ("Shift", "caps"),
     "uml_e": ("ë", ""),
+    "studio_unlock": ("Studio", "unlock"),
 }
 
 
