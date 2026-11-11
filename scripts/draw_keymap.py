@@ -483,7 +483,9 @@ code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.86em;
 
 
 def build_html(layers, layout, sensors, unbound, title, combos=(), beh_map=None):
-    sensor_pos = set((s["row"], s["col"]) for s in sensors)
+    # Only sensors that name a key position can be drawn. Keymap-editor style
+    # entries (ref/name/compatible, as in corne_v3.json) carry none.
+    sensor_pos = set((s["row"], s["col"]) for s in sensors if "row" in s and "col" in s)
     parts = []
     stack = [b for _n, _d, b in layers]
     for name, disp, bindings in layers:

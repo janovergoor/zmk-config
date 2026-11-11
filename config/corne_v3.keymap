@@ -32,17 +32,31 @@
  *
  *   The LEFT column is the media stack, and is the one place this keymap departs
  *   from v06_v2 -- the drawing puts ENC on pos 6 and `-` on pos 20 of every
- *   layer, but the encoder knob is not installed yet:
+ *   layer:
  *       base    pos 6 Mute             pos 20 Play/Pause
  *       SYMBOL  pos 6 Vol+             pos 20 Vol-
  *       NUMNAV  pos 6 Next             pos 20 Prev
- *   Six transport controls in one column, which is what the knob will take over
- *   when it arrives. Until then nothing is lost. Note this leaves the base layer
- *   with no `-` key (v06_v2 wants one on pos 20); `-` lives on SYMBOL pos 19.
+ *   Note this leaves the base layer with no `-` key (v06_v2 wants one on pos 20);
+ *   `-` lives on SYMBOL pos 19.
  *
- * Rotary encoders are ALREADY declared in corne_v1.dtsi (four of them) and every
- * layer already carries sensor-bindings, so the knob works the moment it is
- * fitted -- nothing here needs to change for rotation, only the pos-6 keypress.
+ * ROTARY ENCODER (left half, in the pos-6 footprint).
+ *
+ *   Press: the knob's push switch takes pos 6's place in the matrix, so pressing
+ *   it is whatever pos 6 is on the active layer -- Mute on base.
+ *
+ *   Turn: sensor-bindings, matched BY INDEX against the sensors list in
+ *   corne_v1.dtsi: 0 = left_ex1, 1 = left_ex2, 2 = right_ex1, 3 = right_ex2.
+ *   The left PCB has two encoder footprints (EX1 and EX2, sharing a pin) and
+ *   nothing upstream says which one is the pos-6 one, so slots 0 AND 1 are both
+ *   volume: the knob turns volume whichever footprint it is. When the PCB is in
+ *   hand the silkscreen settles it, and the other slot can be rebound freely.
+ *   The right-half slots are kept but have no knob.
+ *
+ *   If it turns the wrong way, swap the two keycodes in slots 0 and 1.
+ *
+ *   The knob is on the PERIPHERAL half (the right half is central on this board).
+ *   ZMK v0.3 forwards peripheral encoder events over the split link, so that
+ *   works, but the binding is resolved in the RIGHT half's firmware.
  *
  * Legend convention in the KLE: the upper glyph is the SHIFTED one, the lower is
  * unshifted. `:` over `;` on pos 26 is deliberately the inverse of a US board.
@@ -293,7 +307,7 @@
                           &kp LCTRL &kp LALT &kp LGUI                      &kp SPACE &mo 2 &mo 1
             >;
 
-            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
+            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
         };
 
         // ------------------------------------------------------------------------------------------
@@ -327,7 +341,7 @@
                                       &kp LCTRL      &kp LALT  &kp LGUI                         &kp SPACE &trans    &trans
             >;
 
-            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
+            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
         };
 
         // ------------------------------------------------------------------------------------------
@@ -348,7 +362,7 @@
                                    &kp LCTRL &kp LALT  &kp LGUI                       &kp SPACE &trans    &trans
             >;
 
-            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
+            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
         };
 
         // Reached with &mo 3 from base pos 7.

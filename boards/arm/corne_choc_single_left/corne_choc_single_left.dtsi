@@ -70,7 +70,7 @@
     sensors: sensors {
         compatible = "zmk,keymap-sensors";
         sensors = <&left_ex1_encoder &left_ex2_encoder &right_ex1_encoder &right_ex2_encoder>;
-        triggers-per-rotation = <24>;
+        triggers-per-rotation = <20>;   // one per detent (20-detent EC11, steps 80); upstream 98c5a11
     };
 };
 
