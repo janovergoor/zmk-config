@@ -24,8 +24,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
-DEFAULT_KEYMAP = os.path.join(REPO, "config", "corne_v2.keymap")
-DEFAULT_LAYOUT = os.path.join(REPO, "config", "corne_v2.json")
+DEFAULT_KEYMAP = os.path.join(REPO, "config", "corne_v3.keymap")
+DEFAULT_LAYOUT = os.path.join(REPO, "config", "corne_v3.json")
 
 U = 62          # px per key unit
 GAP = 3         # px shaved off each key so neighbours don't touch
@@ -166,11 +166,11 @@ KEY_LABEL = {
     # (This is how SYMBOL types € ° ± ß § ∆ without Unicode Hex Input, which
     # would otherwise swallow Option and break opt+arrow word navigation.)
     "LS(LA(N2))": "€", "LS(LA(N8))": "°", "LS(LA(EQUAL))": "±",
-    "LA(S)": "ß", "LA(N6)": "§", "LA(J)": "∆",
+    "LA(S)": "ß", "LA(N6)": "§", "LA(J)": "∆", "LA(C)": "ç", "LA(U)": "¨",
     "LC(LG(Q))": "Lock",
 }
 
-LAYER_NAMES = {0: "base", 1: "symbol", 2: "numnav"}
+LAYER_NAMES = {0: "base", 1: "symbol", 2: "numnav", 3: "bt"}
 
 # What a plain US key gives you with Shift held. Drawn small above the tap glyph
 # so a key reads like the cap it is: "<" over ",", "?" over "/".
@@ -196,6 +196,7 @@ NAMED = {
     "bt_clr": ("BT clr", "all"),
     "td_to_game": ("⇥⇥", "game"),
     "magic_shift_tap": ("Shift", "caps"),
+    "uml_e": ("ë", ""),
 }
 
 
@@ -233,7 +234,7 @@ def pretty(binding, beh_map=None):
         if shifted:
             return (label(args[0]), shifted, "kp", True)
         return (label(args[0]), "", "kp", False)
-    if beh in ("&hrm_l", "&hrm_r"):
+    if beh in ("&hrm_l", "&hrm_r", "&mt", "&ht_shift_0"):
         return (label(args[1]), label(args[0]), "hold", False)
     if beh == "&lt":
         lyr = LAYER_NAMES.get(int(args[0]), args[0]) if args[0].isdigit() else args[0].lower()
@@ -362,7 +363,12 @@ def svg_for(layout, bindings, sensor_pos, unbound, combos=(), layer_idx=0,
         (x1, y1), (x2, y2) = cs
         mx, my = (x1 + x2) / 2, (y1 + y2) / 2
         glyph = bind.replace("&kp ", "").strip()
-        glyph = label(glyph)   # KEY_LABEL already knows every glyph a combo emits
+        if glyph.startswith("&"):
+            # a bare behavior reference (a macro, e.g. &uml_e) rather than a keycode
+            nm = glyph.lstrip("&")
+            glyph = NAMED[nm][0] if nm in NAMED else nm.replace("_", " ")
+        else:
+            glyph = label(glyph)   # KEY_LABEL knows every keycode a combo emits
         out.append('<g class="combo">')
         out.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f"/>' % (x1, y1, x2, y2))
         if len(glyph) > 1:

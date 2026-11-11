@@ -1,0 +1,365 @@
+/*
+ * Copyright (c) 2020 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ * corne_v3 -- transcribed from
+ *   kb-corne/layouts/corne/corne_own_v06_v2.json
+ *
+ * What changed from corne_v2 (= corne_own_v05.json):
+ *
+ *   - SYM moved to the right thumb's outer key (pos 45), where `/` used to be.
+ *     NNAV stays on pos 44. That frees the old SYM slot (pos 39) for a real key.
+ *   - The bottom-right two keys become the standard US pairs: pos 38 `/` (shift
+ *     `?`) and pos 39 `'` (shift `"`).
+ *   - SYMBOL is substantially re-laid-out: LOCK takes pos 1, `\` moves to
+ *     pos 9, DEL appears on pos 12, and @ ! & # $ move to the home row.
+ *   - NUMNAV's left Shift becomes tap-0 / hold-Shift, and = % ~ ` fill the row.
+ *   - The BSPC+SPACE lock combo is gone; LOCK is now a key (SYMBOL pos 1).
+ *   - Bracket combos now run on NUMNAV too; [ ] are suppressed on SYMBOL.
+ *
+ * THE TWO INNER COLUMNS (positions 6/20 on the left, 7/21 on the right).
+ *
+ *   The RIGHT column is exactly what v06_v2 draws:
+ *       base    pos 7 BT (&mo 3)        pos 21 FN (Globe)
+ *       SYMBOL  pos 7 transparent      pos 21 FN (Globe)
+ *       NUMNAV  pos 7 PgUp             pos 21 PgDn
+ *   Moving BT access to the base layer is what freed SYMBOL pos 7; with LOCK
+ *   now on pos 1 that slot is simply transparent, so the base layer's BT
+ *   (&mo 3) shows through and the bluetooth layer stays reachable from SYMBOL.
+ *   Moving PgUp/PgDn onto the inner column is what frees NUMNAV pos 8/22 for
+ *   $ and #.
+ *
+ *   The LEFT column is the media stack, and is the one place this keymap departs
+ *   from v06_v2 -- the drawing puts ENC on pos 6 and `-` on pos 20 of every
+ *   layer, but the encoder knob is not installed yet:
+ *       base    pos 6 Mute             pos 20 Play/Pause
+ *       SYMBOL  pos 6 Vol+             pos 20 Vol-
+ *       NUMNAV  pos 6 Next             pos 20 Prev
+ *   Six transport controls in one column, which is what the knob will take over
+ *   when it arrives. Until then nothing is lost. Note this leaves the base layer
+ *   with no `-` key (v06_v2 wants one on pos 20); `-` lives on SYMBOL pos 19.
+ *
+ * Rotary encoders are ALREADY declared in corne_v1.dtsi (four of them) and every
+ * layer already carries sensor-bindings, so the knob works the moment it is
+ * fitted -- nothing here needs to change for rotation, only the pos-6 keypress.
+ *
+ * Legend convention in the KLE: the upper glyph is the SHIFTED one, the lower is
+ * unshifted. `:` over `;` on pos 26 is deliberately the inverse of a US board.
+ *
+ * Key positions (46). Positions 6/7 and 20/21 are the two inner columns that
+ * only exist on the top two rows.
+ *
+ *    0  1  2  3  4  5  6      7  8  9 10 11 12 13
+ *   14 15 16 17 18 19 20     21 22 23 24 25 26 27
+ *   28 29 30 31 32 33           34 35 36 37 38 39
+ *            40 41 42           43 44 45
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/keys.h>
+
+/ {
+    chosen { zmk,physical-layout = &default_layout; };
+};
+
+/ {
+    behaviors {
+        // The KLE draws ";" above ":" on pos 26, the inverse of a US board, so
+        // the unshifted tap is ":" and Shift gives ";".
+        mm_colon_semi: mm_colon_semi {      // tap : , Shift ;
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp COLON>, <&kp SEMI>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        // ESC key: tap = Esc, Cmd+Esc -> Cmd+`  (mac window/tab cycling).
+        // keep-mods keeps Cmd applied to the morphed `.
+        mm_esc_grave: mm_esc_grave {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp ESC>, <&kp GRAVE>;
+            mods = <(MOD_LGUI|MOD_RGUI)>;
+            keep-mods = <(MOD_LGUI|MOD_RGUI)>;
+        };
+
+        // NUMNAV pos 28: tap = 0, hold = Shift. Not &mt, whose hold-preferred
+        // flavor turns the key into Shift the moment any other key goes down --
+        // on a number layer that makes "0" after a fast digit almost unreachable.
+        //
+        // "balanced" only commits to the hold if the other key is pressed AND
+        // RELEASED while this one is still down. A roll (press 0, press 5,
+        // release 0) therefore types 05, while a real Shift chord -- hold, tap
+        // the arrow, release -- still resolves to Shift, so Shift+arrow
+        // selection is unaffected.
+        //
+        // require-prior-idle-ms is the second guard: if any key was pressed
+        // within 150ms before this one, it resolves to the tap immediately and
+        // never waits. Mid-typing it is always 0; Shift needs the small pause
+        // you take anyway before reaching for a chord. Same 150ms the bracket
+        // combos use.
+        ht_shift_0: ht_shift_0 {            // tap 0, hold Shift
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            bindings = <&kp>, <&kp>;
+            flavor = "balanced";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+        };
+    };
+
+    macros {
+        // ë has no single Option chord, but it does NOT need Unicode Hex Input:
+        // the U.S. layout has a DEAD KEY for the diaeresis at opt+u, which emits
+        // nothing on its own and combines with the next vowel. So opt+u then e
+        // gives ë on the plain U.S. layout. This is a normal two-keystroke macro,
+        // not the hex-input macro that used to live here -- do not delete it on
+        // the assumption that it is.
+        //
+        // Held Shift passes through the combo into the macro, so Shift gives Ë.
+        // The 30ms spacing is to let the host settle the dead-key state between
+        // the two taps; raise it if ë ever comes out as a bare "e".
+        uml_e: uml_e {                      // opt+u (diaeresis dead key) then e
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&macro_tap &kp LA(U) &kp E>;
+            wait-ms = <30>;
+            tap-ms = <30>;
+            label = "UML_E";
+        };
+    };
+
+    combos {
+        compatible = "zmk,combos";
+
+        /*
+         * BRACKETS -- left hand opens, right hand closes, one row per pair:
+         *
+         *     E+R  {        }  U+I        top row
+         *     D+F  (        )  J+K        home row
+         *     C+V  [        ]  M+,        bottom row
+         *
+         * These sit on middle+index pairs, which are the easiest rolls on the
+         * board, so a 50ms window is not enough on its own -- "er" and "m," are
+         * ordinary English sequences. require-prior-idle-ms is what makes them
+         * safe: the combo is ignored if any non-modifier key was pressed within
+         * 150ms before it, so a mid-word roll is blocked while a deliberate
+         * bracket, reached after the small pause you take anyway, is not.
+         *
+         * Both conditions must hold -- 150ms of quiet BEFORE it and both keys
+         * inside 50ms -- so fast typing fails the first, slow typing the second.
+         *
+         * All of them now run on NUMNAV as well as base and SYMBOL, except [ and
+         * ], which are off on SYMBOL: positions 31/32 and 35/36 carry > = and ` ,
+         * there, and bracketing those would fight the layer's own punctuation.
+         *
+         * NOTE the two NUMNAV adjacencies this creates: U+I is HOME+UP and J+K is
+         * LEFT+DOWN. Continuous arrowing is protected by the idle guard, but a
+         * deliberate pause followed by a fast two-arrow roll can still emit } or ).
+         */
+        combo_lbrc {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <4 3>;
+            bindings = <&kp LBRC>;
+            layers = <0 1 2>;
+        };  // E+R -> {
+        combo_rbrc {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <9 10>;
+            bindings = <&kp RBRC>;
+            layers = <0 1 2>;
+        };  // U+I -> }
+        combo_lpar {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <18 17>;
+            bindings = <&kp LPAR>;
+            layers = <0 1 2>;
+        };  // D+F -> (
+        combo_rpar {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <23 24>;
+            bindings = <&kp RPAR>;
+            layers = <0 1 2>;
+        };  // J+K -> )
+        combo_lbkt {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <32 31>;
+            bindings = <&kp LBKT>;
+            layers = <0 2>;
+        };  // C+V -> [   (not on SYMBOL)
+        combo_rbkt {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <35 36>;
+            bindings = <&kp RBKT>;
+            layers = <0 2>;
+        };  // M+, -> ]   (not on SYMBOL)
+
+        // T+G -> +-. On SYMBOL and NUMNAV positions 5 and 19 are + and -, so it
+        // reads as "press + and - together". This is now the ONLY way to type +-,
+        // since v06_v2 drops it as a key. Deliberately NO idle guard: T and G are
+        // both the left index finger, so it cannot be rolled by accident, and
+        // guarding it would only obstruct a deliberate +- typed after a digit.
+        plusminus {
+            timeout-ms = <50>;
+            key-positions = <5 19>;
+            bindings = <&kp LS(LA(EQUAL))>;
+            layers = <0 1 2>;
+        };  // T+G -> +-
+
+        /*
+         * ACCENTS -- one column left of the brackets, on the ring+middle pair,
+         * and each combo contains its own base letter:
+         *
+         *     W+E  ë        S+D  ß        X+C  ç
+         *
+         * layers = <0> ONLY. These positions are 8/9, 5/6 and 2/3 on NUMNAV and
+         * ß/€, _/∆ and </> on SYMBOL, where an accent would be nonsense.
+         *
+         * ç and ß are plain Option chords (opt+c, opt+s), so Shift gives Ç and
+         * the opt+shift form respectively. ë goes through the &uml_e dead-key
+         * macro. ß stays on its own SYMBOL key (pos 2) as well -- this is an
+         * addition, not a move.
+         *
+         * Same 150ms idle guard as the brackets, and it matters most here: "we"
+         * is a common bigram (in Dutch too) and "xc" shows up in except/exceed.
+         * The guard blocks them mid-word. "xc" and "sd" never START a word, so
+         * for those the guard is total cover -- after a pause the next keys are
+         * word-initial, and no word begins "xc".
+         *
+         * "we" does, which is the one gap: a word-initial "we" typed fast after
+         * a genuine pause (starting a sentence with "We") passes the idle guard,
+         * because pause-then-roll is exactly the gesture a combo detects. So
+         * combo_ediaer alone runs a tighter 30ms window: a deliberate chord on
+         * the ring+middle pair (the least independent fingers, so the easiest to
+         * press together) lands well inside 30ms, while a rolled "we" usually
+         * does not. This narrows the overlap rather than removing it -- the two
+         * gestures are not perfectly separable in time. If ë starts missing,
+         * raise it to 35-40; if "We" still misfires, drop to 25.
+         *
+         * Note a tighter window costs nothing in latency: ZMK abandons the combo
+         * sooner, so W and E are actually emitted marginally faster.
+         */
+        combo_ediaer {
+            timeout-ms = <30>;      // tighter than the rest -- see above
+            require-prior-idle-ms = <150>;
+            key-positions = <2 3>;
+            bindings = <&uml_e>;
+            layers = <0>;
+        };  // W+E -> ë
+        combo_szlig {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <16 17>;
+            bindings = <&kp LA(S)>;
+            layers = <0>;
+        };  // S+D -> ß
+        combo_ccedil {
+            timeout-ms = <50>;
+            require-prior-idle-ms = <150>;
+            key-positions = <30 31>;
+            bindings = <&kp LA(C)>;
+            layers = <0>;
+        };  // X+C -> ç
+
+        // The BSPC+SPACE lock combo from corne_v2 is deliberately gone -- LOCK is
+        // a key now, on SYMBOL pos 1.
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        // ------------------------------------------------------------------------------------------
+        // | ESC | Q | W | E | R | T | MUTE | BT   | Y | U | I | O |  P  | BSPC |
+        // | TAB | A | S | D | F | G | PLAY | FN   | H | J | K | L | ;/: | RET  |
+        // | SHFT| Z | X | C | V | B |             | N | M | ,/< | ./> | //? | '/" |
+        //                 | CTRL | ALT | CMD |   | SPACE | NNAV | SYM |
+        // SYM is now the outer right thumb (pos 45); NNAV stays on 44.
+        // BT (pos 7) is the bluetooth layer's entrance, moved here from SYMBOL.
+        default_layer {
+            display-name = "QWERTY";
+            bindings = <
+&mm_esc_grave &kp Q &kp W &kp E     &kp R    &kp T    &kp C_MUTE &mo 3     &kp Y     &kp U &kp I     &kp O   &kp P          &kp BSPC
+&kp TAB       &kp A &kp S &kp D     &kp F    &kp G    &kp C_PP   &kp GLOBE &kp H     &kp J &kp K     &kp L   &mm_colon_semi &kp RET
+&kp LSHFT     &kp Z &kp X &kp C     &kp V    &kp B                         &kp N     &kp M &kp COMMA &kp DOT &kp FSLH       &kp SQT
+                          &kp LCTRL &kp LALT &kp LGUI                      &kp SPACE &mo 2 &mo 1
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
+        };
+
+        // ------------------------------------------------------------------------------------------
+        // | ESC | LOCK | ß | € | / | + | VOL+ | ▽ | $ | \/| | ^ | ° | DEL | BSPC |
+        // | TAB | | | _ | ∆ | * | - | VOL- | FN   | # | ! | @ | & | ;/: | RET  |
+        // | SHFT| § | < | > | = | % |             | ~ | ` | ,/< | ./> |  ?  | '/" |
+        //                 | CTRL | ALT | CMD |   | SPACE | ▽ | ▽ |
+        // EVERY glyph on this layer is now a native Option chord on the U.S.
+        // layout (€ opt+shift+2, ° opt+shift+8, ß opt+s, § opt+6, ∆ opt+j -- which
+        // is U+2206 INCREMENT, not U+0394). The -> macro that used to sit on pos 1
+        // is gone: it typed U+2192 by holding Option and sending hex digits, which
+        // only worked while macOS's "Unicode Hex Input" was the ACTIVE input
+        // source -- and that input source takes over the whole Option layer, so it
+        // broke every chord on this layer AND Option word-navigation. Dropping it
+        // means this keymap no longer depends on the host input source at all.
+        // `?` here is plain ?, not the /-with-shift key the base layer has. +- is
+        // no longer a key at all; it is the T+G (= + and -) combo.
+        //
+        // LOCK (pos 1) is Ctrl+Cmd+Q. Not C_SLEEP: that is Consumer usage 0x32,
+        // which ZMK's own code table marks untested on macOS and which macOS does
+        // not act on. C_POWER does work but ignores anything short of a
+        // deliberate press, so a plain modifier chord is the better key.
+        //
+        // Pos 7 is &trans so the base layer's BT (&mo 3) shows through.
+        symbol_layer {
+            display-name = "SYMBOL";
+            bindings = <
+&mm_esc_grave &kp LC(LG(Q)) &kp LA(S) &kp LS(LA(N2)) &kp FSLH  &kp PLUS  &kp C_VOL_UP &trans    &kp DLLR  &kp BSLH  &kp CARET &kp LS(LA(N8)) &kp DEL        &kp BSPC
+&kp TAB       &kp PIPE      &kp UNDER &kp LA(J)      &kp ASTRK &kp MINUS &kp C_VOL_DN &kp GLOBE &kp HASH  &kp EXCL  &kp AT    &kp AMPS       &mm_colon_semi &kp RET
+&kp LSHFT     &kp LA(N6)    &kp LT    &kp GT         &kp EQUAL &kp PRCNT                        &kp TILDE &kp GRAVE &kp COMMA &kp DOT        &kp QMARK      &kp SQT
+                                      &kp LCTRL      &kp LALT  &kp LGUI                         &kp SPACE &trans    &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
+        };
+
+        // ------------------------------------------------------------------------------------------
+        // | ESC | 7 | 8 | 9 | / | + | NEXT | PGUP | $ | HOME | ↑ | END | DEL | BSPC |
+        // | TAB | 4 | 5 | 6 | * | - | PREV | PGDN | # |  ←   | ↓ |  →  | ;/: | RET  |
+        // | 0/SHFT | 1 | 2 | 3 | = | % |          | ~ | ` | ,/< | ./> |  ?  | '/" |
+        //                 | CTRL | ALT | CMD |   | SPACE | ▽ | ▽ |
+        // Pos 28 is tap-0 / hold-Shift (&ht_shift_0, balanced + 150ms idle guard
+        // -- see the behavior for why), on this layer only; it is a plain Shift
+        // everywhere else. PgUp/PgDn sit on the inner column, which is what lets
+        // $ and # take 8 and 22.
+        numnav_layer {
+            display-name = "NUMNAV";
+            bindings = <
+&mm_esc_grave        &kp N7 &kp N8 &kp N9    &kp FSLH  &kp PLUS  &kp C_NEXT &kp PG_UP &kp DLLR  &kp HOME  &kp UP    &kp END   &kp DEL        &kp BSPC
+&kp TAB              &kp N4 &kp N5 &kp N6    &kp ASTRK &kp MINUS &kp C_PREV &kp PG_DN &kp HASH  &kp LEFT  &kp DOWN  &kp RIGHT &mm_colon_semi &kp RET
+&ht_shift_0 LSHFT N0 &kp N1 &kp N2 &kp N3    &kp EQUAL &kp PRCNT                      &kp TILDE &kp GRAVE &kp COMMA &kp DOT   &kp QMARK      &kp SQT
+                                   &kp LCTRL &kp LALT  &kp LGUI                       &kp SPACE &trans    &trans
+            >;
+
+            sensor-bindings = <&inc_dec_kp C_VOL_DN C_VOL_UP &inc_dec_kp PG_UP PG_DN &inc_dec_kp C_PREV C_NEXT &inc_dec_kp C_BRI_DN C_BRI_UP>;
+        };
+
+        // Reached with &mo 3 from base pos 7.
+        bluetooth {
+            display-name = "BT";
+            bindings = <
+&trans &trans &trans &trans &trans &trans &trans &trans &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &bt BT_CLR
+&trans &trans &trans &trans &trans &trans &trans &trans &bt BT_DISC 0 &bt BT_DISC 1 &bt BT_DISC 2 &bt BT_DISC 3 &bt BT_DISC 4 &bt BT_CLR_ALL
+&trans &trans &trans &trans &trans &trans               &trans        &trans        &trans        &trans        &trans        &trans
+                     &trans &trans &trans               &trans        &trans        &trans
+            >;
+        };
+    };
+};
