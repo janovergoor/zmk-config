@@ -30,6 +30,4 @@
     status = "okay";
 };
 
-&sensors {
-    sensors = <&right_encoder>;
-};
+// No &sensors override -- see perpetual_left.overlay. This knob is sensor 1.
