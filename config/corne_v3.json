@@ -298,5 +298,15 @@
       ]
     }
   },
-  "sensors": []
+  "sensors": [
+    {
+      "ref": "left_encoder_ex1",
+      "name": "encoder_left_ex1",
+      "identifier": "encoder_left_ex1",
+      "compatible": "alps,ec11",
+      "label": "LEFT_ENCODER_EX1",
+      "row": 0,
+      "col": 6
+    }
+  ]
 }

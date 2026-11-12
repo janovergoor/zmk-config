@@ -66,10 +66,18 @@
         status = "disabled";
     };
 
+    // ORDER MATTERS: this list is the index a keymap's sensor-bindings are
+    // matched against (0 = left_ex1 ... 3 = right_ex2), on both halves.
+    //
+    // triggers-per-rotation must divide evenly into the detents. steps = 80 is
+    // a 20-detent EC11 (4 quadrature edges per detent), so 20 gives exactly one
+    // keypress per click. The old value, 24, put a trigger every 15 degrees
+    // against an 18-degree detent, so every fifth click fired twice. Fix from
+    // upstream Keebart/zmk-config 98c5a11.
     sensors: sensors {
         compatible = "zmk,keymap-sensors";
         sensors = <&left_ex1_encoder &left_ex2_encoder &right_ex1_encoder &right_ex2_encoder>;
-        triggers-per-rotation = <24>;
+        triggers-per-rotation = <20>;
     };
 };
 

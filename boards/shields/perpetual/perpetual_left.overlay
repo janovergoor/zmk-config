@@ -30,6 +30,8 @@
     status = "okay";
 };
 
-&sensors {
-    sensors = <&left_encoder>;
-};
+// No &sensors override here, on purpose. Both halves must use the SAME list
+// (perpetual.dtsi: <&left_encoder &right_encoder>), because a knob's index in
+// that list is what the right half sends over the split link and what the
+// keymap's sensor-bindings are matched against: left = 0, right = 1. Each half
+// simply has the other half's encoder disabled.
